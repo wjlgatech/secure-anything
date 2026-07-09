@@ -1,0 +1,37 @@
+# Local production-shaped stack: API + worker + Postgres + Redis.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: agentgate
+      POSTGRES_PASSWORD: agentgate
+      POSTGRES_DB: agentgate
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
+  api:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://agentgate:agentgate@db:5432/agentgate
+      QUEUE_BACKEND: redis
+      REDIS_URL: redis://redis:6379/0
+    ports: ["8099:8099"]
+    depends_on: [db, redis]
+
+  worker:
+    build: .
+    command: ["python", "-m", "agentgate.worker"]
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://agentgate:agentgate@db:5432/agentgate
+      QUEUE_BACKEND: redis
+      REDIS_URL: redis://redis:6379/0
+    depends_on: [db, redis]
+
+volumes:
+  pgdata:
