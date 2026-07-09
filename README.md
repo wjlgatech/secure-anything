@@ -39,7 +39,7 @@ routes to a human. All configurable in [`default_policy.yaml`](src/agentgate/pol
 The full origin story — how a hands-on build on Juji led to a market read, to the "next
 choke point," to this product — lives in **[docs/00-BACKGROUND.md](docs/00-BACKGROUND.md)**.
 The competitive landscape and demand signals are in **[docs/01-MARKET.md](docs/01-MARKET.md)**;
-the plan is in **[docs/02-ROADMAP.md](docs/02-ROADMAP.md)**.
+the plan (with a SPEC per stage) is in **[ROADMAP.md](ROADMAP.md)**.
 
 ## Quickstart
 
