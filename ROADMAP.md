@@ -13,7 +13,8 @@ Single source of truth for what we're building and in what order. Each phase lin
 |---|-------|---------|----------------------------------------|--------|------|
 | 0 | Core gate | Offline pipeline: verify → classify → check → decide → audit | `make check` green (25 tests, lint); live `401`/`202` | ✅ Done | [phase-0](docs/specs/phase-0-core-gate.md) |
 | 1 | Live GitHub loop | Gate acts on a real repo; human-approval loop; the "catch-it-live" demo | E2E on a test repo: agent PR blocked/escalated + audit verifies | 🚧 In progress — code-complete + offline-verified (42 tests); live-repo E2E pending creds | [phase-1](docs/specs/phase-1-github-loop.md) |
-| 2 | Trust & compliance | Audit export + policy library + LLM reviewer + metrics | Signed compliance report generated from real history | ⬜ Planned | [phase-2](docs/specs/phase-2-trust-compliance.md) |
+| 1.5 | Non-bypassable enforcement | The gate is the *only* merge path; protect the gate from the code it judges; robust actor identity | `audit-repo` reports every bypass gap; evaluator-error → merge-blocking verdict; self-approval refused | 🎯 Next after P1 | [phase-1.5](docs/specs/phase-1.5-non-bypassable.md) |
+| 2 | Trust & compliance | Audit export + **external anchoring (WORM/timestamp)** + policy library + LLM reviewer + metrics | Signed report; chain head corroborated by an external anchor (operator-tamper detectable) | ⬜ Planned | [phase-2](docs/specs/phase-2-trust-compliance.md) |
 | 3 | General action firewall | Beyond PRs: gate any consequential action via a proxy/MCP shim | A non-GitHub action (mock payment) gated + audited via the same core | ⬜ Planned | [phase-3](docs/specs/phase-3-action-firewall.md) |
 | 4 | Scale & GTM | Multi-tenant, SOC2 posture, pilots, pricing validation | Design-partner pilot live; buyer + pricing validated | ⬜ Planned | [phase-4](docs/specs/phase-4-scale-gtm.md) |
 
