@@ -9,11 +9,14 @@ import hashlib
 import hmac
 
 from ..actor import classify_actor
-from ..domain import PullRequest
+from ..domain import ApprovalCommand, PullRequest
 from ..policy.schema import Policy
 
 # PR actions worth (re)evaluating.
 REVIEWABLE_ACTIONS = {"opened", "synchronize", "reopened", "ready_for_review"}
+
+# The comment command a human uses to approve an escalated PR.
+APPROVE_COMMAND = "/agentgate approve"
 
 
 def verify_signature(secret: str, body: bytes, signature_header: str | None) -> bool:
@@ -44,4 +47,27 @@ def parse_pull_request_event(
         head_sha=(pr.get("head") or {}).get("sha", ""),
         actor=actor,
         delivery_id=delivery_id,
+    )
+
+
+def parse_issue_comment_event(payload: dict, delivery_id: str = "") -> ApprovalCommand | None:
+    """Parse an `issue_comment` webhook into an ApprovalCommand, or None.
+
+    Only newly-created comments *on a pull request* whose body carries the approve
+    command qualify. Authorization is verified later, against GitHub — the payload's
+    author is only an identity claim.
+    """
+    if payload.get("action") != "created":
+        return None
+    issue = payload.get("issue") or {}
+    if "pull_request" not in issue:  # a comment on a plain issue, not a PR
+        return None
+    body = (payload.get("comment") or {}).get("body", "") or ""
+    if APPROVE_COMMAND not in body.strip().lower():
+        return None
+    repo = (payload.get("repository") or {}).get("full_name", "")
+    commenter = ((payload.get("comment") or {}).get("user") or {}).get("login", "")
+    return ApprovalCommand(
+        repo=repo, number=int(issue.get("number", 0)),
+        commenter=commenter, delivery_id=delivery_id,
     )

@@ -15,7 +15,11 @@ from .db import init_db, engine, session_factory
 from .models import PRReview
 from .policy.engine import load_policy
 from .queue import get_queue
-from .webhooks.github import parse_pull_request_event, verify_signature
+from .webhooks.github import (
+    parse_issue_comment_event,
+    parse_pull_request_event,
+    verify_signature,
+)
 
 log = logging.getLogger("agentgate")
 
@@ -49,17 +53,25 @@ async def github_webhook(
         # Reject unverified requests outright — the first security gate.
         raise HTTPException(status_code=401, detail="invalid signature")
 
-    if x_github_event != "pull_request":
-        return {"status": "ignored", "event": x_github_event}
-
     payload = await request.json()
-    pr = parse_pull_request_event(payload, policy, delivery_id=x_github_delivery or "")
-    if pr is None:
-        return {"status": "ignored", "action": payload.get("action")}
 
-    get_queue(settings).enqueue({"pr": pr.model_dump()})
-    return {"status": "queued", "repo": pr.repo, "number": pr.number,
-            "actor_kind": pr.actor.kind.value}
+    if x_github_event == "pull_request":
+        pr = parse_pull_request_event(payload, policy, delivery_id=x_github_delivery or "")
+        if pr is None:
+            return {"status": "ignored", "action": payload.get("action")}
+        get_queue(settings).enqueue({"kind": "pr_review", "pr": pr.model_dump()})
+        return {"status": "queued", "repo": pr.repo, "number": pr.number,
+                "actor_kind": pr.actor.kind.value}
+
+    if x_github_event == "issue_comment":
+        cmd = parse_issue_comment_event(payload, delivery_id=x_github_delivery or "")
+        if cmd is None:
+            return {"status": "ignored", "action": payload.get("action")}
+        get_queue(settings).enqueue({"kind": "approval", "approval": cmd.model_dump()})
+        return {"status": "queued", "kind": "approval",
+                "repo": cmd.repo, "number": cmd.number}
+
+    return {"status": "ignored", "event": x_github_event}
 
 
 @app.get("/reviews/recent")

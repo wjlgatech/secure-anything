@@ -82,3 +82,16 @@ class Decision(BaseModel):
     reasons: list[str] = Field(default_factory=list)
     check_results: list[CheckResult] = Field(default_factory=list)
     llm_reviewed: bool = False
+
+
+class ApprovalCommand(BaseModel):
+    """A human's `/agentgate approve` request on an escalated PR, from a PR comment.
+
+    Authorization (does this commenter have write access?) is checked at
+    processing time against GitHub — never trusted from the payload alone.
+    """
+
+    repo: str  # "owner/name"
+    number: int
+    commenter: str  # GitHub login of whoever issued the command
+    delivery_id: str = ""

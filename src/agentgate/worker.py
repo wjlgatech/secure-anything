@@ -64,7 +64,7 @@ def process_job(job: dict, *, session, policy: Policy, settings: Settings,
     changes = gh.fetch_changeset(pr.repo, pr.number)
     decision = evaluate(pr, changes, policy, settings=settings)
 
-    AuditLedger(session).append("pr_decision", {
+    event = AuditLedger(session).append("pr_decision", {
         "repo": pr.repo, "number": pr.number, "delivery_id": pr.delivery_id,
         "actor": pr.actor.model_dump(), "action": decision.action.value,
         "risk": decision.risk.value, "reasons": decision.reasons,
@@ -78,8 +78,20 @@ def process_job(job: dict, *, session, policy: Policy, settings: Settings,
     ))
     session.commit()
 
-    gh.post_decision(pr, decision)
+    gh.post_decision(pr, decision, audit_id=event.hash)
     return decision
+
+
+def handle_job(job: dict, *, session, policy: Policy, settings: Settings,
+               github: GitHubClient | None = None):
+    """Dispatch a dequeued job by kind: a PR review or a human approval command."""
+    if job.get("kind") == "approval":
+        from .approvals import process_approval
+        from .domain import ApprovalCommand
+
+        cmd = ApprovalCommand.model_validate(job["approval"])
+        return process_approval(cmd, session=session, settings=settings, github=github)
+    return process_job(job, session=session, policy=policy, settings=settings, github=github)
 
 
 def run() -> None:  # pragma: no cover - long-running loop
@@ -98,7 +110,7 @@ def run() -> None:  # pragma: no cover - long-running loop
             continue
         try:
             with Session() as session:
-                process_job(job, session=session, policy=policy, settings=settings)
+                handle_job(job, session=session, policy=policy, settings=settings)
         except Exception:
             log.exception("job failed")
 

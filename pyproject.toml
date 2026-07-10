@@ -17,6 +17,8 @@ dependencies = [
 [project.optional-dependencies]
 # Production scale-out: swap the in-process queue for Redis-backed workers.
 redis = ["redis>=5.0"]
+# GitHub App auth: sign the App JWT (RS256) to mint installation tokens.
+github = ["pyjwt[crypto]>=2.8"]
 dev = ["pytest>=8.0", "pytest-asyncio>=0.23", "ruff>=0.4"]
 
 [build-system]

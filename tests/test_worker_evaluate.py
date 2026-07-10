@@ -33,7 +33,7 @@ class _FakeGitHub:
     def fetch_changeset(self, repo, number):
         return self._changes
 
-    def post_decision(self, pr, decision):
+    def post_decision(self, pr, decision, *, audit_id=""):
         self.posted.append(decision.action.value)
 
 
