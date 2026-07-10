@@ -31,12 +31,22 @@ LLM reviewer (P2), non-GitHub actions (P3), multi-tenant auth (P4).
 - Merge-blocking: rely on branch protection "require check to pass" + our check-run.
 
 ## Task checklist
-- [ ] `github_client`: JWT → installation token; real `fetch_changeset` w/ pagination.
-- [ ] `github_client.post_decision`: check-run + review + comment (replace `NotImplementedError`).
-- [ ] Redis worker path verified end-to-end (compose up; PR → decision on GitHub).
-- [ ] Approval command handler + write-access authorization check + ledger record.
-- [ ] Integration test against a throwaway repo (or a recorded fixture / VCR-style).
-- [ ] Demo script + recording: secret / CI-rewrite / 4k-diff each caught.
+- [x] `github_client`: JWT → installation token (behind optional `[github]` extra); real
+  `fetch_changeset` w/ pagination (Link-header cursor; fixed a params-override infinite loop).
+- [x] `github_client.post_decision`: check-run + review + comment (replaced `NotImplementedError`).
+  Escalate/request-changes map to non-`success` conclusions so branch protection blocks merge.
+- [x] Approval command handler + write-access authorization check + ledger record
+  (`approvals.py`, `webhooks.parse_issue_comment_event`, worker `handle_job` dispatch).
+- [x] Offline integration tests via `httpx.MockTransport` (request-building, pagination,
+  payload shapes, authorization, ledger) — 42 tests, deterministic, no network.
+- [ ] Redis worker path verified end-to-end (compose up; PR → decision **on real GitHub**). ⏳ needs creds
+- [ ] Demo script + recording: secret / CI-rewrite / 4k-diff each caught. ⏳ needs a live test repo
+
+> **Honest status:** all code paths are built and covered by deterministic offline tests
+> (the app boots; unsigned webhook → `401`, signed `/agentgate approve` → `202 queued`,
+> `/audit/verify` → `intact`). What is **not** yet verified is the loop against a *real*
+> GitHub App + repo (token minting, live check-run posting) — that requires credentials and
+> a sandbox repo, and is the remaining gate for the Definition of Done below.
 
 ## Definition of Done
 On a live test repo: an agent PR that touches a protected path is **escalated** (merge
