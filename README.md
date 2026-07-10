@@ -170,7 +170,8 @@ extra: `pip install '.[github]'` (mints installation tokens by signing the App J
 **See it work, offline, in one command** — the pipeline decides + audits with a fake GitHub:
 
 ```bash
-make check              # 42 deterministic tests: verify→classify→check→decide→audit, + the approval loop
+make check                              # 42 deterministic tests: verify→classify→check→decide→audit, + approval loop
+python scripts/demo_bypass_caught.py    # the "caught in the act" demo: 5 agent attempts, real gate, tamper-evident ledger
 ```
 
 ---
@@ -311,8 +312,10 @@ make check        # ruff check + pytest → 42 passing, ~0.1s, no network, no ke
 | [`docs/03-ARCHITECTURE.md`](docs/03-ARCHITECTURE.md) | The pipeline, the GitHub App wiring, the data model |
 | [`docs/04-SECURITY.md`](docs/04-SECURITY.md) | Threat model, trust boundaries, the audit ledger |
 | [`docs/05-POLICY.md`](docs/05-POLICY.md) | Policy-as-data: the schema and how to tune the gate |
+| [`docs/DEMO.md`](docs/DEMO.md) | The "caught in the act" demo — runs today (`python scripts/demo_bypass_caught.py`) |
+| [`docs/06-DESIGN-PARTNERS.md`](docs/06-DESIGN-PARTNERS.md) | Design-partner program: buyer hypotheses, outreach, the 90-day pilot |
 | [`docs/specs/`](docs/specs/) | One SPEC per phase — the contract; the code proves it |
-| [`docs/adr/`](docs/adr/) | Architecture decisions ([ADR-001: approval channel](docs/adr/001-approval-channel.md)) |
+| [`docs/adr/`](docs/adr/) | Architecture decisions ([ADR-001: approval channel](docs/adr/001-approval-channel.md), [ADR-002: fail-closed](docs/adr/002-fail-closed-and-separation-of-duties.md)) |
 | [`AGENTS.md`](AGENTS.md) | Contributor guide for humans **and** AI agents — the one rule: `make check` must pass |
 
 ---
