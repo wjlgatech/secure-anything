@@ -15,7 +15,7 @@ from being vanity/self-graded. Tier-1 harness is real and runnable (see the life
    accountability" is the open wall). Publishing a reproducible one is thought-leadership — *and* a
    moat, if it's independent.
 
-**Two traps to design out (both from the 3-horizon research in `07-TRUST-AS-A-SERVICE.md`):**
+**Two traps to design out (both from the 3-horizon research in `09-TRUST-AS-A-SERVICE.md`):**
 - **Vanity metrics** — Gartner: >40% of agentic projects get cancelled; benchmark *decisions that
   matter*, not a leaderboard number. Report the cost side (false-escalation rate), not just catches.
 - **Issuer-pays capture** — the #1 300-year failure mode (Moody's→2008). A benchmark we grade
@@ -111,6 +111,6 @@ audit ledger · human-approval with verified write-access · non-bypassable enfo
 4. Keep the cost side (false-escalation rate) in every report; a gate that escalates everything is
    "secure" and worthless.
 
-*Sources for the market/competitor context: `07-TRUST-AS-A-SERVICE.md` (primary-cited) + `01-MARKET.md`.
+*Sources for the market/competitor context: `09-TRUST-AS-A-SERVICE.md` (primary-cited) + `01-MARKET.md`.
 Competitor capability claims here are from public positioning, not hands-on evaluation — WEAK until
 benched directly.*
