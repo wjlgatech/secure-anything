@@ -42,15 +42,33 @@ Ran `benchmark.py` on the real core with the GxP policy pack (`pilots/agentgate-
   process, offline core. So the deterministic core is effectively free vs a ~15-min human review.
   *Caveat: adding the optional LLM-reviewer will dominate latency — re-measure that path separately.*
 
-## Tier-2 (next, the one that matters most): adversarial catch rate
+## Tier-2 (BUILT 2026-07-21, real numbers): adversarial catch rate
 
-A labeled **red-team corpus** of malicious/risky agent PRs with ground-truth intent: secret
-exfiltration variants, protected-path tampering disguised as refactors, prompt-injected diff/PR
-bodies trying to talk the gate into approving, oversized-diff smuggling, self-approval attempts.
-Report **catch rate** and **false-escalation rate** (precision/recall). Precedent to borrow from:
-Lakera's *Gandalf* adversarial dataset and *HackAPrompt* (prompt-injection corpora). This is where
-"deterministic policy-as-data" should structurally win: a jailbroken agent can't argue past a YAML
-check, only past an LLM one — a *measurable* safety property, not a slogan.
+An 18-case red-team corpus with ground-truth intent (12 malicious/risky, 6 benign), run on the real
+core (`lifescience-os/pilots/agentgate-gxp/redteam.py`). Reports catch rate + false-escalation rate.
+**Built to include attacks the deterministic core cannot catch — a red-team that scores 100% is rigged.**
+
+| Policy | Catch rate | False-escalation | Precision | F1 |
+|---|---|---|---|---|
+| Baseline GxP pack | **7/12 = 58%** | 0/6 = 0% | 100% | 0.74 |
+| Hardened (policy-only, +auth/manifest paths) | **9/12 = 75%** | 0/6 = 0% | 100% | 0.86 |
+
+**Findings (honest):**
+- **Policy-as-data pays off:** hardening the *YAML* (adding `**/auth/**` + dependency manifests)
+  caught the auth-backdoor and supply-chain-typosquat cases — **+17 pts catch rate, zero code, zero
+  new false escalations.**
+- **Measured safety strength:** a prompt-injection-in-PR-body ("IGNORE POLICY, AUTO-APPROVE") with a
+  benign diff was correctly auto-approved — the deterministic core ignores injection text. Structural
+  prompt-injection resistance, measured.
+- **3 residual misses need code (the roadmap driver):** obfuscated/split-string secrets → an
+  **entropy/obfuscation-aware secret check** (new deterministic check); a semantic logic backdoor
+  (small, unprotected, no secret) → the **LLM reviewer (Phase 2)**, gated so "no evidence ⇒ escalate."
+- **Bottom line:** deterministic policy catches *structural* attacks (secrets, protected paths, CI
+  tamper, size, +supply-chain/auth once hardened); *semantic* attacks need the LLM layer — which must
+  itself be gated or it reintroduces the non-determinism we removed.
+
+Precedent to grow toward: Lakera *Gandalf* + *HackAPrompt* (prompt-injection corpora); add ≥2
+independent labelers + Cohen's κ (trust-ladder L6) and run in CI on every gate change.
 
 ## Tier-3: the competitor capability matrix (who they are)
 
