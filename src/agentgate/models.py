@@ -27,6 +27,9 @@ class AuditEvent(Base):
     prev_hash: Mapped[str] = mapped_column(String(64))
     hash: Mapped[str] = mapped_column(String(64), unique=True)
     payload: Mapped[dict] = mapped_column(JSON, default=dict)
+    # Ed25519 signature over `hash` (base64), when a signer is configured (ADR-003).
+    # Nullable: an unsigned chain (signer=None) leaves this NULL and verifies as before.
+    signature: Mapped[str | None] = mapped_column(String(128), nullable=True, default=None)
 
 
 class PRReview(Base):

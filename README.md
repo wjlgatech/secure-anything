@@ -10,7 +10,7 @@ First wedge: a **PR firewall for coding agents**, built for a world where 10–5
 
 [![CI](https://github.com/wjlgatech/agentgate/actions/workflows/ci.yml/badge.svg)](https://github.com/wjlgatech/agentgate/actions/workflows/ci.yml)
 [![python](https://img.shields.io/badge/python-3.11%2B-blue)](pyproject.toml)
-[![tests](https://img.shields.io/badge/tests-49%20passing-success)](tests/)
+[![tests](https://img.shields.io/badge/tests-56%20passing-success)](tests/)
 [![actor-aware](https://img.shields.io/badge/policy-actor--aware-d97757)](src/agentgate/policy/default_policy.yaml)
 [![license](https://img.shields.io/badge/license-proprietary-black)](LICENSE)
 
@@ -236,6 +236,12 @@ record: `hash = sha256(prev_hash | kind | canonical(payload))`. Re-walking the c
 insertion, deletion, or edit of history — turning "the agent did X" into evidence you can stand behind
 (EU AI Act, FINRA auditability).
 
+**Optional Ed25519 signing** ([ADR-003](docs/adr/003-ed25519-audit-signing.md)) closes the operator-
+tamper gap: hash-chaining proves *internal consistency*, but an operator who can rewrite rows can
+recompute the whole chain. Set `AGENTGATE_AUDIT_KEY` to a PKCS8 PEM and the ledger signs each chain
+head — now forging history requires the *key*, not just DB write access. `GET /audit/verify` returns
+`{"intact", "signed"}`; `signer=None` is the unchanged, backward-compatible hash-chain.
+
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'primaryColor':'#e8e6dc','primaryTextColor':'#141413','primaryBorderColor':'#b0aea5','lineColor':'#b0aea5','secondaryColor':'#faf9f5','tertiaryColor':'#faf9f5','fontFamily':'Poppins, ui-sans-serif, system-ui, -apple-system, Arial, sans-serif'}}}%%
 flowchart LR
@@ -271,7 +277,8 @@ src/agentgate/
   policy/       # policy-as-data: schema + default_policy.yaml + loader (a jailbreak can't argue past YAML)
   decision.py   # combine checks (+ optional LLM review) → an actor-aware Decision  ← PURE
   review/       # optional LLM risk-review seam (raises until wired — no fake pass)
-  audit.py      # hash-chained, tamper-evident ledger
+  audit.py      # hash-chained, tamper-evident ledger (+ optional Ed25519 signing)
+  signing.py    # Ed25519 signer seam — sign/verify chain heads (ADR-003), lazy-imported
   github_client.py  # GitHub REST seam: fetch changeset · post decision · approval (httpx-injectable)
   worker.py     # evaluate() [PURE] → audit → persist → post back;  handle_job() dispatch
   main.py       # FastAPI: webhook entrypoint + /healthz + /reviews/recent + /audit/verify

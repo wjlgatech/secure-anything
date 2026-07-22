@@ -9,11 +9,15 @@ from __future__ import annotations
 
 import hashlib
 import json
+from typing import TYPE_CHECKING
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from .models import AuditEvent
+
+if TYPE_CHECKING:
+    from .signing import Signer
 
 GENESIS = "0" * 64
 
@@ -28,8 +32,11 @@ def compute_hash(prev_hash: str, kind: str, payload: dict) -> str:
 
 
 class AuditLedger:
-    def __init__(self, session: Session):
+    def __init__(self, session: Session, signer: "Signer | None" = None):
         self.session = session
+        # Optional Ed25519 signer (ADR-003). When set, each chain head is signed so
+        # tampering is detectable even against an operator who can rewrite the DB.
+        self.signer = signer
 
     def latest_hash(self) -> str:
         row = self.session.execute(
@@ -40,7 +47,9 @@ class AuditLedger:
     def append(self, kind: str, payload: dict) -> AuditEvent:
         prev = self.latest_hash()
         h = compute_hash(prev, kind, payload)
-        event = AuditEvent(kind=kind, prev_hash=prev, hash=h, payload=payload)
+        signature = self.signer.sign(h.encode()) if self.signer else None
+        event = AuditEvent(kind=kind, prev_hash=prev, hash=h, payload=payload,
+                           signature=signature)
         self.session.add(event)
         self.session.commit()
         return event
@@ -49,15 +58,21 @@ class AuditLedger:
         events = self.session.execute(
             select(AuditEvent).order_by(AuditEvent.id.asc())
         ).scalars().all()
-        return verify_chain(events)
+        return verify_chain(events, signer=self.signer)
 
 
-def verify_chain(events: list[AuditEvent]) -> bool:
+def verify_chain(events: list[AuditEvent], signer: "Signer | None" = None) -> bool:
+    """Chain integrity, plus signature authenticity when a signer is supplied.
+    With a signer, every event MUST carry a signature valid for its hash — an
+    unsigned row in a signed ledger is treated as tampering (a dropped signature)."""
     prev = GENESIS
     for e in events:
         if e.prev_hash != prev:
             return False
         if e.hash != compute_hash(e.prev_hash, e.kind, e.payload):
             return False
+        if signer is not None:
+            if not e.signature or not signer.verify(e.hash.encode(), e.signature):
+                return False
         prev = e.hash
     return True
