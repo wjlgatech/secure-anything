@@ -95,5 +95,21 @@ def audit_verify() -> dict:
 
     Session = session_factory()
     with Session() as s:
-        ledger = AuditLedger(s)
-        return {"intact": ledger.verify()}
+        ledger = AuditLedger(s, signer=_audit_signer())
+        return {"intact": ledger.verify(), "signed": _audit_signer() is not None}
+
+
+def _audit_signer():
+    """Load the Ed25519 audit signer from AGENTGATE_AUDIT_KEY (a PKCS8 PEM path), or
+    None to run the unsigned hash-chain (ADR-003). Kept isolated so the pure ledger
+    stays key-agnostic and offline-testable."""
+    import os
+
+    key_path = os.environ.get("AGENTGATE_AUDIT_KEY")
+    if not key_path:
+        return None
+    from pathlib import Path
+
+    from .signing import Ed25519Signer
+
+    return Ed25519Signer.load(Path(key_path))
