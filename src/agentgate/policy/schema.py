@@ -21,10 +21,16 @@ class TouchedPathsConfig(BaseModel):
     severity: RiskTier = RiskTier.HIGH
 
 
+class AgentAuditConfig(BaseModel):
+    enabled: bool = False        # opt-in: needs the external `agent-audit` SAST tool
+    min_level: str = "warning"   # ignore SARIF findings below this: note | warning | error
+
+
 class ChecksConfig(BaseModel):
     diff_size: DiffSizeConfig = Field(default_factory=DiffSizeConfig)
     secret_scan: SecretScanConfig = Field(default_factory=SecretScanConfig)
     touched_paths: TouchedPathsConfig = Field(default_factory=TouchedPathsConfig)
+    agent_audit: AgentAuditConfig = Field(default_factory=AgentAuditConfig)
 
 
 class ActorPolicy(BaseModel):

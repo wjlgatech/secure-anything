@@ -47,6 +47,34 @@ the players are **Show-HN open-source projects**, not $800M incumbents. The lane
 - A 2025 scan found **every MCP server lacked authentication** — the plumbing for
   agents-that-act doesn't exist yet.
 
+## Prior art in our exact lane — USC FORTIS Lab (validation, not a substitute)
+
+The closest work to AgentGate is **Dr. Yue Zhao's USC FORTIS Lab** (PyOD/TrustLLM author). It ships
+two OSS tools that *bracket* us on the lifecycle — full source-level teardown in
+[07-PRIOR-ART.md](07-PRIOR-ART.md):
+
+- **AEGIS** ([repo](https://github.com/Justin0504/Aegis), [paper arXiv 2603.12621](https://arxiv.org/abs/2603.12621))
+  — a **runtime** pre-execution firewall for agent *tool calls*: intercept → classify → block, with
+  human approval and a tamper-evident audit trail (hash-chain **+** content-hash **+ Ed25519**).
+  Production-grade (desktop app, control plane, multi-cloud, PyPI/npm).
+- **`agent-audit`** ([repo](https://github.com/HeadyZhang/agent-audit)) — a **build-time** SAST for
+  agent *code*: taint analysis + MCP audit, ~39 rules → OWASP Agentic Top-10, SARIF CI gate.
+
+**Why this is a tailwind, not a threat:** a peer-reviewed group independently converged on our thesis
+(pre-action policy gate · human approval · tamper-evident ledger) — the strongest market validation
+we have. And they leave our chokepoint open: AEGIS explicitly **does not cover code review / PRs**,
+and neither tool is **actor-aware** (human vs AI-agent vs bot). AgentGate owns **merge-time**.
+
+> *"AEGIS gates what an agent does at runtime; AgentGate gates what an agent tries to merge into your
+> codebase — same accountability spine, different chokepoint, and we're actor-aware."*
+
+**Honest gaps to close:** on audit cryptography and policy expressiveness AEGIS is *ahead* today.
+We adopt Ed25519 ledger signing to match the audit primitive ([ADR-003](adr/003-ed25519-audit-signing.md))
+and can wrap `agent-audit` as an AgentGate check for a fast, OWASP-mapped evidence signal. Do **not**
+chase their runtime-firewall / policy-DSL surface — win merge-time decisively instead. Potential
+collaboration: cite the paper, seek a listing in the lab's
+[`awesome-auditable-ai`](https://github.com/yzhao062/awesome-auditable-ai).
+
 ## Positioning
 
 > **AgentGate = the action firewall + accountability ledger for agents-that-act.**

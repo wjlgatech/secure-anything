@@ -30,6 +30,9 @@ checks:
       - "**/migrations/**"
       - "**/auth/**"
       - "src/agentgate/policy/**"
+  agent_audit:            # OWASP Agentic Top-10 SAST (USC FORTIS Lab). Opt-in:
+    enabled: false        #   `pip install agent-audit` then flip to true.
+    min_level: warning    # note | warning | error
 
 # "for human + AI agents": agents are held to a stricter bar than humans by default.
 actors:
