@@ -10,7 +10,7 @@ First wedge: a **PR firewall for coding agents**, built for a world where 10–5
 
 [![CI](https://github.com/wjlgatech/agentgate/actions/workflows/ci.yml/badge.svg)](https://github.com/wjlgatech/agentgate/actions/workflows/ci.yml)
 [![python](https://img.shields.io/badge/python-3.11%2B-blue)](pyproject.toml)
-[![tests](https://img.shields.io/badge/tests-42%20passing-success)](tests/)
+[![tests](https://img.shields.io/badge/tests-49%20passing-success)](tests/)
 [![actor-aware](https://img.shields.io/badge/policy-actor--aware-d97757)](src/agentgate/policy/default_policy.yaml)
 [![license](https://img.shields.io/badge/license-proprietary-black)](LICENSE)
 
@@ -205,6 +205,10 @@ fails) and whether it's **blocking** (a hard `request_changes`, not an escalatio
 | `secret_scan` | a credential/API key appears in the diff | high | **yes** — hard block |
 | `touched_paths` | a protected glob is touched (`.github/workflows/**`, `**/auth/**`, `policy/**`, migrations, Dockerfiles) | high (configurable) | no — escalate |
 | `diff_size` | churn exceeds `max_churn` / `hard_max_churn` | medium / high | no — escalate |
+| `agent_audit` *(opt-in)* | the [agent-audit](https://github.com/HeadyZhang/agent-audit) SAST (OWASP Agentic Top-10) flags the added code; tool unavailable ⇒ escalate, never a fake pass | mapped from finding level | no — escalate |
+
+`agent_audit` wraps an external SAST as an injectable scanner seam (offline-deterministic in tests);
+it's disabled by default — see [`docs/07-PRIOR-ART.md`](docs/07-PRIOR-ART.md) for the prior-art context.
 
 Add one under `src/agentgate/checks/`, register it in `checks/registry.py`, add its config to the
 policy schema, and write a deterministic test. (Design DNA: AnyAgent's `EvidenceCollector` seam —
