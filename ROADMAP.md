@@ -16,6 +16,7 @@ Single source of truth for what we're building and in what order. Each phase lin
 | 1.5 | Non-bypassable enforcement | The gate is the *only* merge path; protect the gate from the code it judges; robust actor identity | `audit-repo` reports every bypass gap; evaluator-error → merge-blocking verdict; self-approval refused | 🎯 Next after P1 | [phase-1.5](docs/specs/phase-1.5-non-bypassable.md) |
 | 2 | Trust & compliance | Audit export + **external anchoring (WORM/timestamp)** + policy library + LLM reviewer + metrics | Signed report; chain head corroborated by an external anchor (operator-tamper detectable) | 🚧 Started — **Ed25519 chain-head signing landed** ([ADR-003](docs/adr/003-ed25519-audit-signing.md)); external anchoring + export next | [phase-2](docs/specs/phase-2-trust-compliance.md) |
 | 3 | General action firewall | Beyond PRs: gate any consequential action via a proxy/MCP shim | A non-GitHub action (mock payment) gated + audited via the same core | ⬜ Planned | [phase-3](docs/specs/phase-3-action-firewall.md) |
+| 3.5 | Session-telemetry evidence (OEC seam) | Consume `eval-anything scripts/observe.py --eval` signals (tool_error_rate, subagents, files_mutated per session) as an **evidence check** input — an agent whose session telemetry looks erratic gets a stricter gate. Completes the family O→E→C loop: eval-anything observes+evaluates, AgentGate controls | A PR from an agent with a high-error session escalates where the same diff from a clean session auto-merges; deterministic offline test with a fixture signals file | ⬜ Planned (seam defined 2026-07-23) | eval-anything `scripts/observe.py` (the E side of the seam) |
 | 4 | Scale & GTM | Multi-tenant, SOC2 posture, pilots, pricing validation | Design-partner pilot live; buyer + pricing validated | ⬜ Planned | [phase-4](docs/specs/phase-4-scale-gtm.md) |
 
 ## How we work (the discipline)
@@ -34,6 +35,10 @@ The rules that keep planning honest and building fast — we dogfood our own gat
 5. **Dogfood from Phase 1.** Once the live loop works, AgentGate reviews PRs *to this repo*
    (human + AI-agent authors). Our process is our demo.
 6. **Small, single-purpose PRs.** Large diffs / protected-path touches escalate by design.
+7. **Benchmark numbers obey eval-anything's non-negotiables** (the family's eval OS):
+   catch-rate claims use StrongREJECT-style strict scoring (a "technically caught" doesn't
+   inflate), false-escalation is the guardrail metric that may never degrade, deltas get
+   error bars (Anthropic 2411.00640), and every red-team result names its attack-set version.
 
 ## Tracking
 
