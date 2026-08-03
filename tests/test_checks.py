@@ -1,8 +1,8 @@
-from agentgate.checks.diff_size import DiffSizeCheck
-from agentgate.checks.paths import path_matches
-from agentgate.checks.secret_scan import SecretScanCheck
-from agentgate.checks.touched_paths import TouchedPathsCheck
-from agentgate.domain import RiskTier
+from secure_anything.organs.agentgate.checks.diff_size import DiffSizeCheck
+from secure_anything.organs.agentgate.checks.paths import path_matches
+from secure_anything.organs.agentgate.checks.secret_scan import SecretScanCheck
+from secure_anything.organs.agentgate.checks.touched_paths import TouchedPathsCheck
+from secure_anything.organs.agentgate.domain import RiskTier
 
 
 def test_diff_size_tiers(make_pr, make_changes, policy):

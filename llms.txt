@@ -1,0 +1,45 @@
+# secure-anything
+
+> The composition layer for agent security. A lean core (registry · deterministic router ·
+> uniform gate seam · hash-chained Ed25519-signed ledger · a computable north star) over a rich
+> ecosystem of capabilities and knowledge cards. It owns no domain logic: domain work lives in
+> organs (ours) or upstream satellites (theirs, never vendored).
+
+Private and proprietary. Access does not grant a license.
+
+## How to read this repo
+
+- The single source of truth is `data/` — `registry.yml` (capabilities), `knowledge.yml`
+  (papers, books, blogs, people, labs, standards, concepts), `controls.yml` (the north-star
+  denominator), `ainative.yml` (the disciplines the repo audits itself against).
+- Everything published (README tables, the flagship skill) is **generated** from `data/` by
+  `scripts/build.py` and drift-gated. Do not hand-edit a generated block.
+- `make check` is the contract: ruff · charter manifest · registry evidence · drift · self-audit
+  (≥90) · pytest. Offline and deterministic — no network, no API key.
+
+## The status ladder
+
+⚪ candidate (named) → 🟡 digested (pinned SHA + digest on disk) → 🟢 integrated (its gate ran
+HERE, exit code recorded in `runs/<id>/`). Only 🟢 moves the north star. `scripts/verify_registry.py`
+refuses a promotion whose on-disk evidence is missing.
+
+## Rules an agent working here must follow
+
+- **No evidence means no.** An unmeasured item is reported by name and excluded; a blocking gate
+  can never be green while something is unmeasured.
+- **Aggregate exit codes, never claims.** A vendor's prose is not a result.
+- **Unresolved license ⇒ pointer only.** Never vendor, never run it in CI.
+- **Evidence tiers are load-bearing.** Never restate a `claimed` number as a fact.
+- **Never weaken a test to make it pass.** An honest ❌ beats a fake ✅.
+- **The core is budgeted.** ≤600 LOC, no organ imports, no vendor names. Push logic into an organ.
+
+## Key files
+
+- [README.md](README.md) — what this is, current north-star reading, honest edges
+- [docs/VISION.md](docs/VISION.md) — charter: vision, mission, north star, operating modes, non-goals
+- [GOAL.md](GOAL.md) — the founding intent as 7 machine-verifiable goals
+- [ROADMAP.md](ROADMAP.md) — the milestone arc M0→M5, each with a runnable DoD
+- [skills/secure-anything/SKILL.md](skills/secure-anything/SKILL.md) — the super-tool (generated)
+- [eval/secure-anything.md](eval/secure-anything.md) — every routing claim, each a pytest case
+- [docs/organs/agentgate/](docs/organs/agentgate/) — the PR-firewall organ
+- [AGENTS.md](AGENTS.md) — contributor rules for humans and agents

@@ -1,0 +1,527 @@
+# registry.yml — THE single source of truth for secure-anything's capabilities.
+#
+# Every published surface (README tables, skills/secure-anything/SKILL.md) is GENERATED from
+# this file and drift-gated by `python3 scripts/build.py --check`. Never hand-edit downstream.
+#
+# STATUS LADDER (the product):
+#   candidate  (⚪) = named, role assigned, metadata verified. Moves the north star by ZERO.
+#   digested   (🟡) = docs/satellites/<id>.md exists + pinned_sha + license. Still ZERO.
+#   integrated (🟢) = digest + its gate RAN HERE with a recorded exit code in runs/<id>/.
+#                     Only this moves the north star.
+# A promotion whose on-disk evidence is missing is REFUSED by scripts/verify_registry.py.
+#
+# LICENSE DISCIPLINE: `license: NOASSERTION` means GitHub could not resolve a standard SPDX
+# identifier. Unknown license ⇒ treated as restrictive ⇒ pointer-only, never vendored, never
+# executed in our CI, until a human confirms it (`license_confirmed: true`). No evidence ⇒ no.
+#
+# `covers:` maps a capability to controls in data/controls.yml. These mappings are AUTHORED BY US
+# (asserted_by: secure-anything, 2026-08-03), are a judgement call, and are disputable via
+# .github/ISSUE_TEMPLATE/gate-dispute.md. They are not the upstream project's own claim.
+#
+# All stars/license/pushed_at below were read from the GitHub API on 2026-08-03.
+
+version: "1.0"
+updated: "2026-08-03"
+mappings_asserted_by: "secure-anything"
+mappings_asserted_at: "2026-08-03"
+
+capabilities:
+
+  # ─────────────────────────── organs (ours, in-repo, swappable seams) ───────────────────────
+  - id: agentgate
+    kind: organ
+    role: gate
+    capability: "PR firewall for human + AI-agent code changes: verify → classify actor → deterministic checks → optional LLM review → actor-aware decision → hash-chained, Ed25519-signed audit"
+    url: src/secure_anything/organs/agentgate
+    status: digested
+    license: "Proprietary — All Rights Reserved"
+    license_confirmed: true
+    visibility: private
+    verified_at: "2026-08-03"
+    covers: [LLM01, LLM02, LLM03, LLM06, ASI02, ASI03, ASI04, ASI09]
+    notes: >-
+      Was this repo's whole product until 2026-08-03; demoted to the first organ so the meta-core
+      owns no domain logic. Keeps its own roadmap (docs/organs/agentgate/ROADMAP.md) and its own
+      tests. Not yet 🟢 here: needs a run receipt under runs/agentgate/ produced through the
+      core gate seam.
+    triggers: ["review this pr", "gate a pull request", "block an agent pr", "who wrote this code", "actor-aware", "audit ledger", "pr firewall"]
+
+  # ─────────────────────────── family (Paul's other repos) ───────────────────────────────────
+  - id: eval-anything
+    kind: family
+    role: benchmark
+    capability: "The family's eval OS — strict scoring, guardrail metrics that may never degrade, error bars on deltas; supplies session telemetry (tool_error_rate, subagents, files_mutated) as gate evidence"
+    url: https://github.com/wjlgatech/eval-anything
+    status: candidate
+    visibility: private
+    verified_at: "2026-08-03"
+    covers: [LLM09]
+    notes: >-
+      The O→E→C seam: eval-anything observes+evaluates, secure-anything controls. Named in
+      AgentGate's Phase 3.5. Metadata NOT verified against the GitHub API (private repo,
+      unconfirmed from this session) — pointer only until digested.
+    triggers: ["evaluate", "benchmark this", "session telemetry", "error bars", "catch rate"]
+
+  - id: anyagent
+    kind: family
+    role: engine
+    capability: "Build, grade, improve & accountably ship any agent app; the goal-10x front door that drives this repo"
+    url: https://github.com/wjlgatech/anyagent
+    status: candidate
+    visibility: private
+    verified_at: "2026-08-03"
+    covers: []
+    notes: "The engine this repo is built with; private, pointer only."
+    triggers: ["build an agent", "grade this repo", "refine an agent"]
+
+  # ─────────────────────────── scanners (find vulnerabilities in code) ───────────────────────
+  - id: codex-security
+    kind: external
+    role: scanner
+    capability: "CLI + TypeScript SDK that finds, validates (sandbox-executes to kill false positives), and fixes security vulnerabilities in a repo"
+    url: https://github.com/openai/codex-security
+    status: digested
+    pinned_sha: 0572feb293e4ec49956fde99b4d6843a80ea884b
+    license: Apache-2.0
+    license_confirmed: true
+    stars: 8332
+    upstream_pushed_at: "2026-08-03"
+    verified_at: "2026-08-03"
+    covers: [LLM02, LLM03, LLM05, ASI05]
+    notes: >-
+      The repo Paul named. Apache-2.0 ⇒ integratable, but requires a ChatGPT/API credential and
+      network, so it can never run inside the offline `make check` gate — it is a
+      network-boundary capability invoked explicitly. Digest: docs/satellites/codex-security.md
+    triggers: ["scan my repo", "find vulnerabilities", "appsec scan", "codex security", "validate a vulnerability", "fix this cve"]
+
+  - id: semgrep
+    kind: external
+    role: scanner
+    capability: "Lightweight, offline, pattern-based static analysis across many languages — the deterministic scanner that CAN run inside an offline gate"
+    url: https://github.com/semgrep/semgrep
+    status: candidate
+    license: LGPL-2.1
+    license_confirmed: true
+    stars: 16094
+    upstream_pushed_at: "2026-08-03"
+    verified_at: "2026-08-03"
+    covers: [LLM02, LLM05, ASI05]
+    notes: "LGPL-2.1 ⇒ invoke as a subprocess, never link/vendor. Top M2 chain candidate precisely because it is offline and deterministic."
+    triggers: ["static analysis", "semgrep", "lint for security", "offline scan"]
+
+  - id: codeql
+    kind: external
+    role: scanner
+    capability: "Dataflow/taint analysis as queries over a code database; the queries powering GitHub code scanning"
+    url: https://github.com/github/codeql
+    status: candidate
+    license: MIT
+    license_confirmed: true
+    stars: 9902
+    upstream_pushed_at: "2026-08-03"
+    verified_at: "2026-08-03"
+    covers: [LLM05, ASI05]
+    notes: "Queries are MIT; the CodeQL CLI/engine is separately licensed — confirm engine terms before any CI use."
+    triggers: ["taint analysis", "dataflow", "codeql", "code scanning"]
+
+  - id: claude-code-security-review
+    kind: external
+    role: scanner
+    capability: "GitHub Action that uses Claude to security-review a diff — the AI-reviewer counterpart to AgentGate's deterministic checks"
+    url: https://github.com/anthropics/claude-code-security-review
+    status: candidate
+    license: MIT
+    license_confirmed: true
+    stars: 5742
+    upstream_pushed_at: "2026-02-11"
+    verified_at: "2026-08-03"
+    covers: [LLM02, LLM05]
+    notes: "Closest prior art to AgentGate's LLM-review seam. Diff-scoped, so it complements rather than duplicates codex-security's whole-repo scan."
+    triggers: ["ai code review", "review this diff for security", "claude security review"]
+
+  # ─────────────────────────── guardrails (runtime defense) ──────────────────────────────────
+  - id: purplellama
+    kind: external
+    role: guardrail
+    capability: "Meta's LLM security toolset; includes LlamaFirewall (prompt-injection blocking, insecure-code detection, misaligned-reasoning checks) and CyberSecEval"
+    url: https://github.com/meta-llama/PurpleLlama
+    status: candidate
+    license: NOASSERTION
+    license_confirmed: false
+    stars: 4326
+    upstream_pushed_at: "2026-07-27"
+    verified_at: "2026-08-03"
+    covers: [LLM01, LLM05, ASI01, ASI02]
+    notes: "License NOASSERTION (the repo mixes component licenses incl. Llama terms) ⇒ POINTER ONLY until a human confirms. Do not vendor, do not run in CI."
+    triggers: ["llamafirewall", "block prompt injection", "runtime guardrail", "cyberseceval"]
+
+  - id: llm-guard
+    kind: external
+    role: guardrail
+    capability: "Input/output scanning toolkit for LLM interactions — prompt-injection, PII, toxicity, secrets leakage"
+    url: https://github.com/protectai/llm-guard
+    status: candidate
+    license: MIT
+    license_confirmed: true
+    stars: 3202
+    upstream_pushed_at: "2026-07-08"
+    verified_at: "2026-08-03"
+    covers: [LLM01, LLM02, LLM07]
+    triggers: ["scan llm input", "scan llm output", "pii in prompts", "llm guard"]
+
+  - id: nemo-guardrails
+    kind: external
+    role: guardrail
+    capability: "Programmable rails (Colang) constraining what an LLM app may say and do — policy as executable dialogue flow"
+    url: https://github.com/NVIDIA-NeMo/Guardrails
+    status: candidate
+    license: NOASSERTION
+    license_confirmed: false
+    stars: 6866
+    upstream_pushed_at: "2026-08-03"
+    verified_at: "2026-08-03"
+    covers: [LLM01, LLM06, ASI01]
+    notes: "Canonical path is NVIDIA-NeMo/Guardrails (NVIDIA/NeMo-Guardrails redirects). License NOASSERTION ⇒ pointer only until confirmed."
+    triggers: ["nemo guardrails", "colang", "dialogue rails", "constrain the model"]
+
+  - id: guardrails-ai
+    kind: external
+    role: guardrail
+    capability: "Structural, type and quality guarantees on LLM output via composable validators"
+    url: https://github.com/guardrails-ai/guardrails
+    status: candidate
+    license: Apache-2.0
+    license_confirmed: true
+    stars: 7245
+    upstream_pushed_at: "2026-08-02"
+    verified_at: "2026-08-03"
+    covers: [LLM05, LLM09]
+    triggers: ["validate llm output", "output schema", "guardrails ai"]
+
+  - id: invariant
+    kind: external
+    role: guardrail
+    capability: "Guardrails for agent development — trace-level policies over tool calls and agent behaviour"
+    url: https://github.com/invariantlabs-ai/invariant
+    status: candidate
+    license: Apache-2.0
+    license_confirmed: true
+    stars: 438
+    upstream_pushed_at: "2026-01-12"
+    verified_at: "2026-08-03"
+    covers: [ASI02, ASI03, ASI07]
+    notes: "Agent-trace-shaped rather than prompt-shaped — the closest upstream to our gate seam's evidence model. STALE risk: no push since 2026-01."
+    triggers: ["agent trace policy", "tool call policy", "invariant labs"]
+
+  - id: rebuff
+    kind: external
+    role: guardrail
+    capability: "Multi-layer prompt-injection detector (heuristics, LLM check, vector DB of known attacks, canary tokens)"
+    url: https://github.com/protectai/rebuff
+    status: candidate
+    license: Apache-2.0
+    license_confirmed: true
+    stars: 1517
+    upstream_pushed_at: "2024-08-07"
+    verified_at: "2026-08-03"
+    covers: [LLM01]
+    notes: "STALE — no push since 2024-08. Index for its canary-token technique, not as a live dependency."
+    triggers: ["detect prompt injection", "canary token", "rebuff"]
+
+  # ─────────────────────────── red team (attack your own system) ─────────────────────────────
+  - id: garak
+    kind: external
+    role: redteam
+    capability: "LLM vulnerability scanner — a large probe library (jailbreak, leakage, toxicity, injection) run as a repeatable sweep"
+    url: https://github.com/NVIDIA/garak
+    status: candidate
+    license: Apache-2.0
+    license_confirmed: true
+    stars: 8673
+    upstream_pushed_at: "2026-07-31"
+    verified_at: "2026-08-03"
+    covers: [LLM01, LLM02, LLM07, LLM09, ASI01]
+    notes: "Defensive use only — probes are aimed at systems you own. Strong M2/M4 chain candidate (exits non-zero, machine-readable report)."
+    triggers: ["red team my llm", "garak", "probe for jailbreaks", "vulnerability scan an llm"]
+
+  - id: promptfoo
+    kind: external
+    role: redteam
+    capability: "Test prompts, agents and RAG; red-teaming and vulnerability scanning with a CI-gateable assertion model"
+    url: https://github.com/promptfoo/promptfoo
+    status: candidate
+    license: MIT
+    license_confirmed: true
+    stars: 23877
+    upstream_pushed_at: "2026-08-03"
+    verified_at: "2026-08-03"
+    covers: [LLM01, LLM05, LLM09, ASI01, ASI02]
+    notes: "Highest-adoption entry in the registry and ships an OWASP-agentic red-team preset — a strong control-mapping partner for M3."
+    triggers: ["test my prompts", "promptfoo", "red team ci", "eval my agent"]
+
+  - id: pyrit
+    kind: external
+    role: redteam
+    capability: "Microsoft's Python Risk Identification Tool for generative AI — automated, orchestrated red-teaming"
+    url: https://github.com/microsoft/PyRIT
+    status: candidate
+    license: MIT
+    license_confirmed: true
+    stars: 4232
+    upstream_pushed_at: "2026-08-03"
+    verified_at: "2026-08-03"
+    covers: [LLM01, LLM09, ASI01]
+    notes: >-
+      CORRECTION BANKED 2026-08-03: Azure/PyRIT is ARCHIVED (114 stars) and is NOT the live repo.
+      The live project is microsoft/PyRIT. A registry that recorded the archived fork would have
+      pinned a dead SHA — this is why metadata is API-verified, never recalled.
+    triggers: ["pyrit", "automated red teaming", "orchestrate attacks"]
+
+  - id: agentic-security
+    kind: external
+    role: redteam
+    capability: "Agentic LLM vulnerability scanner / AI red-teaming kit with fuzzing and multi-step attack chains"
+    url: https://github.com/msoedov/agentic_security
+    status: candidate
+    license: Apache-2.0
+    license_confirmed: true
+    stars: 1949
+    upstream_pushed_at: "2026-07-31"
+    verified_at: "2026-08-03"
+    covers: [LLM01, ASI01, ASI02]
+    triggers: ["agentic security scanner", "fuzz my agent", "attack chain"]
+
+  - id: promptmap
+    kind: external
+    role: redteam
+    capability: "Security scanner for custom LLM applications — rule-driven prompt-injection test suite"
+    url: https://github.com/utkusen/promptmap
+    status: candidate
+    license: GPL-3.0
+    license_confirmed: true
+    stars: 1240
+    upstream_pushed_at: "2025-12-01"
+    verified_at: "2026-08-03"
+    covers: [LLM01, LLM07]
+    notes: "GPL-3.0 ⇒ subprocess invocation only; never link into our (proprietary) core."
+    triggers: ["promptmap", "test my system prompt", "system prompt leak test"]
+
+  - id: damn-vulnerable-llm-agent
+    kind: external
+    role: redteam
+    capability: "A deliberately vulnerable ReAct agent — the training range for practising agent exploitation and defence"
+    url: https://github.com/ReversecLabs/damn-vulnerable-llm-agent
+    status: candidate
+    license: Apache-2.0
+    license_confirmed: true
+    stars: 498
+    upstream_pushed_at: "2025-06-25"
+    verified_at: "2026-08-03"
+    covers: [ASI01, ASI02, ASI03]
+    notes: "Repo moved to ReversecLabs (formerly WithSecureLabs). Useful as a fixture target for our own gate's regression suite."
+    triggers: ["vulnerable agent", "practice range", "learn agent exploitation"]
+
+  # ─────────────────────────── benchmarks (measure, don't vibe) ──────────────────────────────
+  - id: agentdojo
+    kind: external
+    role: benchmark
+    capability: "Dynamic environment for evaluating indirect prompt-injection attacks AND defences on tool-using agents (97 tasks, 629 security cases)"
+    url: https://github.com/ethz-spylab/agentdojo
+    status: candidate
+    license: MIT
+    license_confirmed: true
+    stars: 706
+    upstream_pushed_at: "2026-06-02"
+    verified_at: "2026-08-03"
+    covers: [LLM01, ASI01, ASI02]
+    notes: "The reference benchmark for the defence side, not just the attack side. Paper: arXiv 2406.13352 (knowledge card: paper-agentdojo)."
+    triggers: ["agentdojo", "benchmark prompt injection", "measure a defence", "indirect prompt injection benchmark"]
+
+  - id: agent-security-bench
+    kind: external
+    role: benchmark
+    capability: "Agent Security Bench (ASB) — 16 attack types × 11 defences × 10 scenarios across 400+ tools and 13 LLM backbones"
+    url: https://github.com/agiresearch/ASB
+    status: candidate
+    license: MIT
+    license_confirmed: true
+    stars: 274
+    upstream_pushed_at: "2026-04-16"
+    verified_at: "2026-08-03"
+    covers: [LLM01, LLM04, ASI01, ASI02, ASI06]
+    triggers: ["agent security bench", "asb", "attack defence matrix"]
+
+  - id: injecagent
+    kind: external
+    role: benchmark
+    capability: "First systematic benchmark for indirect prompt injection in tool-integrated LLM agents (17 user tools, 62 attacker tools)"
+    url: https://github.com/uiuc-kang-lab/InjecAgent
+    status: candidate
+    license: MIT
+    license_confirmed: true
+    stars: 154
+    upstream_pushed_at: "2024-07-02"
+    verified_at: "2026-08-03"
+    covers: [LLM01, ASI02]
+    notes: "STALE — no push since 2024-07. Historically important (first of its kind); use AgentDojo for current work. Paper: arXiv 2403.02691."
+    triggers: ["injecagent", "tool integrated attack benchmark"]
+
+  - id: pint-benchmark
+    kind: external
+    role: benchmark
+    capability: "Benchmark for prompt-injection DETECTORS — measures the guardrail, not the model"
+    url: https://github.com/lakeraai/pint-benchmark
+    status: candidate
+    license: MIT
+    license_confirmed: true
+    stars: 198
+    upstream_pushed_at: "2026-04-16"
+    verified_at: "2026-08-03"
+    covers: [LLM01]
+    notes: "Rare and valuable: most benchmarks grade the model; this one grades the defence you bought."
+    triggers: ["benchmark a detector", "pint", "how good is my injection filter"]
+
+  # ─────────────────────────── skill supply chain ────────────────────────────────────────────
+  - id: skills-registry
+    kind: external
+    role: skill-library
+    capability: "The open agent-skills registry and installer (`npx skills add <owner/repo>`) — the de-facto distribution channel for SKILL.md capabilities across 20+ agents"
+    url: https://github.com/vercel-labs/skills
+    status: candidate
+    license: MIT
+    license_confirmed: true
+    stars: 27919
+    upstream_pushed_at: "2026-07-31"
+    verified_at: "2026-08-03"
+    covers: [LLM03, ASI04]
+    notes: >-
+      Registry front-end at skills.sh. Indexed as INFRASTRUCTURE WE MUST GATE, not as a defence:
+      a one-command installer for third-party procedural instructions is a supply chain, and the
+      skills it installs execute inside an agent's trust boundary. skills.sh publishes an /audits
+      page (Gen Agent Trust Hub, Socket, Snyk) — see the `skills-audit-coverage-gap` card for what
+      that does and does not establish. Highest-value M2 chain candidate outside the code path.
+    triggers: ["install a skill", "npx skills", "skills.sh", "skill registry", "agent skills", "where do skills come from"]
+
+  # ─────────────────────────── policy & threat modelling ─────────────────────────────────────
+  - id: opa
+    kind: external
+    role: policy
+    capability: "General-purpose policy engine (Rego) — decouples policy-as-data/code from the service enforcing it"
+    url: https://github.com/open-policy-agent/opa
+    status: candidate
+    license: Apache-2.0
+    license_confirmed: true
+    stars: 12064
+    upstream_pushed_at: "2026-08-03"
+    verified_at: "2026-08-03"
+    covers: [LLM06, ASI03]
+    notes: "Prior art for our 'policy is data, not prompt' invariant, and the obvious upgrade path if default_policy.yaml outgrows YAML."
+    triggers: ["policy engine", "rego", "opa", "externalize policy"]
+
+  - id: agent-wiz
+    kind: external
+    role: threat-model
+    capability: "CLI that extracts an agent's structure from code and produces a threat model / attack-surface visualization"
+    url: https://github.com/Repello-AI/Agent-Wiz
+    status: candidate
+    license: Apache-2.0
+    license_confirmed: true
+    stars: 385
+    upstream_pushed_at: "2025-11-02"
+    verified_at: "2026-08-03"
+    covers: [ASI02, ASI07, ASI10]
+    notes: "STALE — no push since 2025-11. The 'map the agent before you gate it' step we otherwise lack."
+    triggers: ["threat model my agent", "attack surface", "agent wiz", "map my agent"]
+
+  - id: decider
+    kind: external
+    role: threat-model
+    capability: "CISA's guided tool for mapping observed behaviour to MITRE ATT&CK techniques"
+    url: https://github.com/cisagov/decider
+    status: candidate
+    license: NOASSERTION
+    license_confirmed: false
+    stars: 1223
+    upstream_pushed_at: "2026-02-20"
+    verified_at: "2026-08-03"
+    covers: []
+    notes: "ATT&CK (not ATLAS) — indexed as the pattern for how a finding is mapped to a technique ID, which is exactly M3's job. License NOASSERTION ⇒ pointer only."
+    triggers: ["map to attack", "mitre technique", "decider"]
+
+  # ─────────────────────────── provenance & supply chain ─────────────────────────────────────
+  - id: rekor
+    kind: external
+    role: provenance
+    capability: "Sigstore's append-only, publicly auditable transparency log — the external anchor a private hash-chain needs"
+    url: https://github.com/sigstore/rekor
+    status: candidate
+    license: Apache-2.0
+    license_confirmed: true
+    stars: 1185
+    upstream_pushed_at: "2026-08-03"
+    verified_at: "2026-08-03"
+    covers: [LLM03, ASI04]
+    notes: >-
+      DIRECTLY closes AgentGate's known honesty gap: our Ed25519 chain is tamper-evident only
+      against non-operators. Anchoring chain heads in a third-party log is what earns the word
+      an auditor needs. Highest-priority integration after M2.
+    triggers: ["anchor the ledger", "transparency log", "rekor", "prove we did not rewrite history", "tamper proof"]
+
+  - id: cosign
+    kind: external
+    role: provenance
+    capability: "Container/artifact signing and verification, keyless via Sigstore"
+    url: https://github.com/sigstore/cosign
+    status: candidate
+    license: Apache-2.0
+    license_confirmed: true
+    stars: 6175
+    upstream_pushed_at: "2026-07-31"
+    verified_at: "2026-08-03"
+    covers: [LLM03, ASI04]
+    triggers: ["sign an artifact", "verify a signature", "cosign", "keyless signing"]
+
+  - id: slsa
+    kind: external
+    role: provenance
+    capability: "Supply-chain Levels for Software Artifacts — the graded framework for build-integrity claims"
+    url: https://github.com/slsa-framework/slsa
+    status: candidate
+    license: NOASSERTION
+    license_confirmed: false
+    stars: 1903
+    upstream_pushed_at: "2026-07-29"
+    verified_at: "2026-08-03"
+    covers: [LLM03, ASI04]
+    notes: "A levelled maturity ladder for provenance — the closest external analogue to our own ⚪🟡🟢 ladder. License NOASSERTION (likely CC-BY for the spec) ⇒ confirm before quoting text."
+    triggers: ["slsa", "build provenance", "supply chain level"]
+
+  - id: in-toto-attestation
+    kind: external
+    role: provenance
+    capability: "Standard format for signed statements about a software artifact (the attestation envelope)"
+    url: https://github.com/in-toto/attestation
+    status: candidate
+    license: NOASSERTION
+    license_confirmed: false
+    stars: 359
+    upstream_pushed_at: "2026-07-28"
+    verified_at: "2026-08-03"
+    covers: [LLM03, ASI04]
+    notes: "Candidate wire format for our own gate receipts — adopting a standard envelope beats inventing one. License NOASSERTION ⇒ confirm."
+    triggers: ["attestation format", "in-toto", "signed statement", "receipt format"]
+
+  - id: mcp-spec
+    kind: external
+    role: standard-impl
+    capability: "Model Context Protocol specification — the tool/agent boundary that ASI02 (tool misuse) and ASI07 (inter-agent comms) are about"
+    url: https://github.com/modelcontextprotocol/modelcontextprotocol
+    status: candidate
+    license: NOASSERTION
+    license_confirmed: false
+    stars: 8843
+    upstream_pushed_at: "2026-08-03"
+    verified_at: "2026-08-03"
+    covers: [ASI02, ASI04, ASI07]
+    notes: "Not a security tool — the protocol whose security properties we must gate. Phase-3 (general action firewall) rides on this seam. License NOASSERTION ⇒ confirm."
+    triggers: ["mcp security", "tool boundary", "model context protocol", "gate an mcp server"]

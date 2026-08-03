@@ -1,11 +1,11 @@
 """The human-approval loop: authorization + audit, with a recording fake GitHub."""
 from __future__ import annotations
 
-from agentgate.approvals import can_approve, process_approval
-from agentgate.audit import AuditLedger
-from agentgate.config import Settings
-from agentgate.domain import ApprovalCommand
-from agentgate.models import AuditEvent
+from secure_anything.ledger import AuditLedger
+from secure_anything.organs.agentgate.approvals import can_approve, process_approval
+from secure_anything.organs.agentgate.config import Settings
+from secure_anything.organs.agentgate.domain import ApprovalCommand
+from secure_anything.store import AuditEvent
 
 
 def test_can_approve_only_write_and_above():

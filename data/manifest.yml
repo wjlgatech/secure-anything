@@ -1,0 +1,31 @@
+# manifest.yml — which documents must exist, and what each must contain.
+# Spec-as-data so the SAME gate script works in the private source-of-truth tree and in
+# the generated public tree, which legitimately ship different document sets.
+version: "1.0"
+documents:
+  docs/VISION.md:
+    min_words: 400
+    headings: ["## Vision", "## Mission", "## North-star metric", "## Operating modes",
+               "## Non-goals", "## Honest edges"]
+    must_contain: ["Privacy:"]
+  GOAL.md:
+    min_words: 400
+    headings: ["## 1. Verbatim intent", "## 2. Eval of the intent", "## 3. The un-bundling",
+               "## 4. The 10x move"]
+    must_contain: ["G1", "G7"]
+  ROADMAP.md:
+    min_words: 300
+    headings: ["## The arc", "## How we work"]
+    must_contain: ["M0", "M5", "Definition of Done"]
+  README.md:
+    min_words: 400
+    headings: ["## Honest edges", "## Capabilities", "## Knowledge base"]
+    must_contain: ["BEGIN GENERATED: northstar"]
+  docs/organs/agentgate/README.md:
+    min_words: 300
+    headings: []
+    must_contain: []
+  eval/secure-anything.md:
+    min_words: 200
+    headings: []
+    must_contain: ["Should bank a gap"]

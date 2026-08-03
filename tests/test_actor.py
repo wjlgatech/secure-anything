@@ -1,5 +1,5 @@
-from agentgate.actor import classify_actor
-from agentgate.domain import ActorKind
+from secure_anything.organs.agentgate.actor import classify_actor
+from secure_anything.organs.agentgate.domain import ActorKind
 
 AGENTS = ["claude", "cursor", "devin", "copilot"]
 

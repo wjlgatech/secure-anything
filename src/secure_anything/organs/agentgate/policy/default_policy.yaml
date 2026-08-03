@@ -1,0 +1,54 @@
+# AgentGate default policy — the single source of truth for the gate.
+# Edit this (versioned, reviewed) rather than tuning behaviour in code or prompts.
+version: "0.1"
+
+# Authors whose login/app-slug contains any of these are treated as AI coding agents.
+agent_identities:
+  - claude
+  - claude-code
+  - cursor
+  - devin
+  - copilot
+  - codex
+  - aider
+  - sweep
+  - opendevin
+
+checks:
+  diff_size:
+    max_churn: 800       # added+deleted lines above this => medium-risk
+    hard_max_churn: 3000 # above this => high-risk
+  secret_scan:
+    enabled: true
+  touched_paths:
+    severity: high
+    protected:
+      - ".github/workflows/**"
+      - "infra/**"
+      - "**/Dockerfile"
+      - "**/*.tf"
+      - "**/migrations/**"
+      - "**/auth/**"
+      # The gate must protect the code that judges — and the spec that drives it.
+      # Globbed by directory NAME, not by a fixed prefix, so a package move can never
+      # silently un-protect these again (it did on 2026-08-03: the old literal
+      # "src/agentgate/policy/**" stopped matching the moment the organ moved).
+      - "**/policy/**"
+      - "data/**"
+      - "**/ledger.py"
+      - "**/signing.py"
+  agent_audit:            # OWASP Agentic Top-10 SAST (USC FORTIS Lab). Opt-in:
+    enabled: false        #   `pip install agent-audit` then flip to true.
+    min_level: warning    # note | warning | error
+
+# "for human + AI agents": agents are held to a stricter bar than humans by default.
+actors:
+  human:
+    max_auto_approve_risk: medium
+    require_human_on: [high]
+  ai_agent:
+    max_auto_approve_risk: low          # agents only auto-merge low-risk PRs
+    require_human_on: [medium, high]    # anything riskier needs a human sign-off
+  bot:
+    max_auto_approve_risk: low
+    require_human_on: [high]

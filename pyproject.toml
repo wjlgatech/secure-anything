@@ -1,7 +1,7 @@
 [project]
-name = "agentgate"
-version = "0.1.0"
-description = "The trust & accountability gate for human + AI-agent code changes. First wedge: a PR firewall for coding agents."
+name = "secure-anything"
+version = "0.2.0"
+description = "The composition layer for agent security: a lean core (registry, router, gate seam, signed ledger) over a rich ecosystem of capabilities and knowledge. AgentGate ships as its first organ."
 requires-python = ">=3.11"
 license = { text = "Proprietary — All Rights Reserved" }
 dependencies = [
@@ -20,7 +20,10 @@ dependencies = [
 redis = ["redis>=5.0"]
 # GitHub App auth: sign the App JWT (RS256) to mint installation tokens.
 github = ["pyjwt[crypto]>=2.8"]
-dev = ["pytest>=8.0", "pytest-asyncio>=0.23", "ruff>=0.4"]
+# ruff is PINNED exactly: an unpinned linter means the gate quietly changes meaning
+# between a laptop and CI. Found 2026-08-03 — local ruff 0.15.3 passed, CI installed
+# 0.16.1 and reported 28 errors on the very first public push.
+dev = ["pytest>=8.0", "pytest-asyncio>=0.23", "ruff==0.15.3"]
 
 [build-system]
 requires = ["setuptools>=68"]
@@ -36,4 +39,16 @@ addopts = "-q"
 
 [tool.ruff]
 line-length = 100
-src = ["src", "tests"]
+src = ["src", "tests", "scripts"]
+required-version = "0.15.3"   # refuse to run at all under a different ruff
+
+[tool.ruff.lint]
+# Pin the rule set explicitly. Relying on ruff's defaults means a ruff upgrade
+# silently rewrites the gate.
+select = ["E", "F", "W", "I", "UP", "B", "C4", "RUF"]
+ignore = [
+  "UP017",  # datetime.UTC is 3.11+; we target 3.11 and say so
+  "UP042",  # `str, Enum` is deliberate: StrEnum changes YAML/pydantic round-tripping,
+            # and these enums are serialised into data/ and the audit ledger
+]
+

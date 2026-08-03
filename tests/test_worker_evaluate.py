@@ -1,14 +1,15 @@
 """End-to-end evaluation (pure core) + a full process_job run with a fake GitHub."""
 from __future__ import annotations
 
-from agentgate.config import Settings
-from agentgate.domain import ActionType, ActorKind, ChangeSet, FileChange
-from agentgate.policy.engine import load_policy
-from agentgate.worker import evaluate, process_job
+from secure_anything.organs.agentgate.config import Settings
+from secure_anything.organs.agentgate.domain import ActionType, ActorKind, ChangeSet, FileChange
+from secure_anything.organs.agentgate.policy import DEFAULT_POLICY_PATH
+from secure_anything.organs.agentgate.policy.engine import load_policy
+from secure_anything.organs.agentgate.worker import evaluate, process_job
 
 
 def _policy():
-    return load_policy("src/agentgate/policy/default_policy.yaml")
+    return load_policy(DEFAULT_POLICY_PATH)
 
 
 def test_clean_small_human_pr_auto_approves(make_pr, make_changes):
@@ -54,5 +55,5 @@ def test_process_job_persists_and_audits(session, make_pr):
     assert again is None
 
     # audit ledger recorded exactly one decision and is intact
-    from agentgate.audit import AuditLedger
+    from secure_anything.ledger import AuditLedger
     assert AuditLedger(session).verify() is True

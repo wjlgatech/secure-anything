@@ -31,7 +31,7 @@ tamper-evident *to us* (addressed in Phase 2 anchoring).
    - "Allow GitHub Actions to create and approve pull requests" **disabled**;
    - "Require approval of the most recent reviewable push" **enabled**;
    - merge queue enabled (checks re-run against the real post-merge tree);
-   - CODEOWNERS covers `src/agentgate/policy/**`, the gate's own code, `.github/workflows/**`;
+   - CODEOWNERS covers `src/secure_anything/organs/agentgate/policy/**`, the gate's own code, `.github/workflows/**`;
    - bypass lists scoped so no bot can force-push/delete the protected branch.
 2. **Fail-closed availability.** The required check reports `pending`/`failure` (blocks merge)
    whenever the gate is down, errored, or unreachable — never `success` on error. Run ≥2

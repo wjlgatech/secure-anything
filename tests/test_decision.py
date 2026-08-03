@@ -1,5 +1,5 @@
-from agentgate.decision import decide
-from agentgate.domain import ActionType, ActorKind, CheckResult, RiskTier
+from secure_anything.organs.agentgate.decision import decide
+from secure_anything.organs.agentgate.domain import ActionType, ActorKind, CheckResult, RiskTier
 
 
 def _clean() -> list[CheckResult]:

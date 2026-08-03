@@ -1,0 +1,77 @@
+# controls.yml — the DENOMINATOR of the north-star metric (Verified Control Coverage).
+#
+# A control is only in scope if it comes from a published, citable framework. We do not
+# invent controls. Each framework carries an evidence tier for its OWN contents:
+#   verified     = the list was read at the primary source URL on verified_at
+#   corroborated = >=3 independent secondary sources agree; primary is paywalled/PDF-only
+#
+# VCC = |controls with >=1 integrated capability holding a run receipt| / |controls in scope|
+# Computed by scripts/northstar.py. Naming a satellite moves this by ZERO.
+
+version: "1.0"
+updated: "2026-08-03"
+
+frameworks:
+  - id: owasp-llm-2025
+    title: "OWASP Top 10 for Large Language Model Applications"
+    edition: "2025"
+    url: https://genai.owasp.org/llm-top-10/
+    evidence: verified
+    verified_at: "2026-08-03"
+    verified_note: "List read directly from genai.owasp.org/llm-top-10 on 2026-08-03."
+    controls:
+      - id: LLM01
+        title: "Prompt Injection"
+      - id: LLM02
+        title: "Sensitive Information Disclosure"
+      - id: LLM03
+        title: "Supply Chain"
+      - id: LLM04
+        title: "Data and Model Poisoning"
+      - id: LLM05
+        title: "Improper Output Handling"
+      - id: LLM06
+        title: "Excessive Agency"
+      - id: LLM07
+        title: "System Prompt Leakage"
+      - id: LLM08
+        title: "Vector and Embedding Weaknesses"
+      - id: LLM09
+        title: "Misinformation"
+      - id: LLM10
+        title: "Unbounded Consumption"
+
+  - id: owasp-asi-2026
+    title: "OWASP Top 10 for Agentic Applications"
+    edition: "2026"
+    url: https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/
+    published: "2025-12-09"
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    verified_note: >-
+      Publication date (2025-12-09) verified at the primary OWASP resource page, but that page
+      ships the list only as a PDF download — the ten titles below are CORROBORATED from four
+      independent secondary sources that agree verbatim (Pharos Production, Cycode, promptfoo
+      red-team docs, Modulos governance guide). Upgrade to `verified` once the PDF is read.
+      Honest edge: this framework is half the north-star denominator, on a corroborated tier.
+    controls:
+      - id: ASI01
+        title: "Agent Goal Hijack"
+      - id: ASI02
+        title: "Tool Misuse and Exploitation"
+      - id: ASI03
+        title: "Identity and Privilege Abuse"
+      - id: ASI04
+        title: "Agentic Supply Chain Vulnerabilities"
+      - id: ASI05
+        title: "Unexpected Code Execution (RCE)"
+      - id: ASI06
+        title: "Memory and Context Poisoning"
+      - id: ASI07
+        title: "Insecure Inter-Agent Communication"
+      - id: ASI08
+        title: "Cascading Failures"
+      - id: ASI09
+        title: "Human-Agent Trust Exploitation"
+      - id: ASI10
+        title: "Rogue Agents"

@@ -13,5 +13,9 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install -e ".[dev]"
-      - run: ruff check src tests
-      - run: python -m pytest
+      # ruff is pinned in pyproject and `required-version` makes it refuse to run under
+      # any other build, so CI and a laptop cannot disagree about what "lint clean" means.
+      - run: ruff --version
+      # CI runs EXACTLY the canonical gate — never a subset. If `make check` and CI can
+      # diverge, the local green stops meaning anything.
+      - run: make check

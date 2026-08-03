@@ -22,19 +22,20 @@ import sys
 
 from sqlalchemy.orm import sessionmaker
 
-from agentgate.audit import AuditLedger
-from agentgate.db import init_db, make_engine
-from agentgate.domain import (
+from secure_anything.ledger import AuditLedger
+from secure_anything.organs.agentgate.db import init_db, make_engine
+from secure_anything.organs.agentgate.domain import (
+    ActionType,
     Actor,
     ActorKind,
-    ActionType,
     ChangeSet,
     FileChange,
     PullRequest,
 )
-from agentgate.models import AuditEvent
-from agentgate.policy.engine import load_policy
-from agentgate.worker import evaluate
+from secure_anything.organs.agentgate.policy import DEFAULT_POLICY_PATH
+from secure_anything.organs.agentgate.policy.engine import load_policy
+from secure_anything.organs.agentgate.worker import evaluate
+from secure_anything.store import AuditEvent
 
 GREEN, RED, YELLOW, DIM, BOLD, RESET = (
     "\033[32m", "\033[31m", "\033[33m", "\033[2m", "\033[1m", "\033[0m"
@@ -84,7 +85,7 @@ SCENARIOS = [
         "AI agent — edits its OWN guardrails (the bypass move)",
         _pr(ActorKind.AI_AGENT, "sweep-ai", "chore: tidy policy"),
         ChangeSet(files=[FileChange(
-            path="src/agentgate/policy/default_policy.yaml", additions=3,
+            path="src/secure_anything/organs/agentgate/policy/default_policy.yaml", additions=3,
             patch="+  ai_agent: { max_auto_approve_risk: high }")]),
         ActionType.ESCALATE,
     ),
@@ -92,7 +93,7 @@ SCENARIOS = [
 
 
 def main() -> int:
-    policy = load_policy("src/agentgate/policy/default_policy.yaml")
+    policy = load_policy(DEFAULT_POLICY_PATH)
     engine = make_engine("sqlite:///:memory:")
     init_db(engine)
     Session = sessionmaker(bind=engine, future=True, expire_on_commit=False)

@@ -100,7 +100,7 @@ Repo: [`HeadyZhang/agent-audit`](https://github.com/HeadyZhang/agent-audit) · M
   severity gate.
 
 **Opportunity:** agent-audit is exactly an `EvidenceCollector` in our sense. Wrapping it as an
-AgentGate **check** (`src/agentgate/checks/`) gives us a 39-rule, OWASP-mapped SAST signal inside the
+AgentGate **check** (`src/secure_anything/organs/agentgate/checks/`) gives us a 39-rule, OWASP-mapped SAST signal inside the
 PR gate for near-zero build cost — a fast credibility win and a concrete reason to talk to the lab.
 
 ---

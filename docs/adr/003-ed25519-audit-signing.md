@@ -6,7 +6,7 @@
 
 ## Context
 
-Our ledger (`src/agentgate/audit.py`) is **hash-chained** only:
+Our ledger (`src/secure_anything/ledger.py`) is **hash-chained** only:
 `hash = sha256(prev_hash | kind | canonical(payload))`. Re-walking the chain detects insertion,
 deletion, or edit of history — *relative to a copy of the chain the verifier already trusts*.
 
@@ -67,7 +67,7 @@ authentic, the anchor makes it non-rewritable.
 
 Shipped in this change (56 tests, lint clean):
 
-- **`src/agentgate/signing.py`** — `Signer` Protocol seam + `Ed25519Signer` body (lazy
+- **`src/secure_anything/signing.py`** — `Signer` Protocol seam + `Ed25519Signer` body (lazy
   `cryptography` import so the app still loads without the dep; sign/verify over bytes; PKCS8
   PEM save/load at `0o600`). Landed as a flat module, not `audit/signing.py`, to avoid converting
   the `audit.py` module into a package (lower blast radius; same seam).

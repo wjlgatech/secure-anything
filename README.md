@@ -1,337 +1,326 @@
 <div align="center">
 
-# 🛡️ AgentGate
+# 🛡️ secure-anything
 
-### The trust & accountability gate for human **+ AI-agent** code changes.
+### The composition layer for agent security — **lean core, rich ecosystem.**
 
-**When agents stop *talking* and start *doing* — merging code, moving money, mutating prod — the question isn't "did it say something wrong?" It's "is this actor allowed to take *this action*, and can we prove it later?" AgentGate is the gate that answers it — for humans and AI agents alike.**
+**Every consequential action an AI agent takes should pass a gate a machine can re-run and an auditor can re-verify years later. Security for agents stops being a vendor's claim and becomes an exit code plus a signed receipt.**
 
-First wedge: a **PR firewall for coding agents**, built for a world where 10–50 developers *and* AI coding agents open pull requests every day.
-
-[![CI](https://github.com/wjlgatech/agentgate/actions/workflows/ci.yml/badge.svg)](https://github.com/wjlgatech/agentgate/actions/workflows/ci.yml)
+[![CI](https://github.com/wjlgatech/secure-anything/actions/workflows/ci.yml/badge.svg)](https://github.com/wjlgatech/secure-anything/actions/workflows/ci.yml)
 [![python](https://img.shields.io/badge/python-3.11%2B-blue)](pyproject.toml)
-[![tests](https://img.shields.io/badge/tests-56%20passing-success)](tests/)
-[![actor-aware](https://img.shields.io/badge/policy-actor--aware-d97757)](src/agentgate/policy/default_policy.yaml)
+[![core](https://img.shields.io/badge/core-%E2%89%A4600%20LOC%20(gated)-d97757)](tests/test_core_invariants.py)
 [![license](https://img.shields.io/badge/license-proprietary-black)](LICENSE)
 
-[Quick Start](#-quick-start) · [Why](#-why-agentgate) · [How it works](#-how-it-works--a-10-year-old-can-follow-this) · [Architecture](#-architecture-io-edge--pure-core) · [The Ledger](#-the-audit-ledger-court-grade-not-a-log-file) · [Roadmap](ROADMAP.md) · [Docs](#-docs)
+[Charter](docs/VISION.md) · [Contract](GOAL.md) · [Roadmap](ROADMAP.md) · [The super-tool](skills/secure-anything/SKILL.md) · [AgentGate organ](docs/organs/agentgate/README.md)
 
 </div>
 
 ---
 
-> ### Today's CI asks "do the tests pass?" Tomorrow's asks "should this actor have done this?"
-> A pull request from a jailbroken agent can be green *and* catastrophic. The gate a team needs is not another linter — it's a **policy-as-data firewall** that knows *who* is acting, holds agents to a stricter bar than humans, and writes every decision to a **tamper-evident ledger** so "the agent did X" becomes court/compliance-grade evidence. AgentGate is that gate, built as **swappable seams** with a **pure, offline-testable core** — so every decision is deterministic and every claim is proven by a test, not a vibe.
+## Where we stand
+
+<!-- BEGIN GENERATED: northstar -->
+**Verified Control Coverage (VCC): 0/20 = 0.0%**  ← the north star
+
+- Capabilities: 0 🟢 integrated · 2 🟡 digested · 30 ⚪ candidate
+- Knowledge cards: 3 claimed · 19 corroborated · 1 disputed · 12 verified
+- 17 control(s) are **mapped** to a capability but have no run receipt. Mapped is not measured — they count as zero.
+<!-- END GENERATED: northstar -->
+
+> **Zero VCC is the honest answer at M0.** The north star only counts a capability whose gate has
+> actually run *here* and left a receipt. Naming a tool moves it by nothing — which is the point.
+> The number is the work queue, not the scoreboard.
 
 ---
 
-## 📰 News
+## The one idea
 
-- **2026-07-09** — **Phase 1: the live GitHub loop lands (code-complete, offline-verified)**. The
-  gate can now post its decision as a **check-run** (escalate / request-changes map to
-  non-`success` conclusions, so branch protection keeps the PR unmergeable) plus a **review** and a
-  **comment with reasons + an audit id**. `fetch_changeset` follows GitHub's Link-header pagination —
-  dogfooding caught a real params-override **infinite-loop** bug (passing an empty params dict
-  overwrites the cursor URL) before it could ship. The **human-approval loop** is live:
-  `/agentgate approve` on an escalated PR verifies the commenter's **write access** against GitHub
-  (authorization, not just identity) and records both grants *and* refusals to the ledger. Every
-  network boundary is an `httpx`-injectable seam, so all of it is covered by **deterministic offline
-  tests** (`httpx.MockTransport`, no key, no network). **42 tests, lint clean.** Live-repo E2E
-  (real App token minting) is the one remaining gate → [phase-1 spec](docs/specs/phase-1-github-loop.md),
-  [ADR-001](docs/adr/001-approval-channel.md).
-- **2026-07-09** — **v0.1 — the core gate ships (Phase 0)**. The offline pipeline —
-  **verify → classify actor → deterministic checks → decide → audit** — is complete and honest:
-  webhook HMAC verification (unsigned → `401`), actor classification (human / ai_agent / bot),
-  deterministic evidence checks (secrets · protected paths · diff size), an **actor-aware** decision
-  engine (agents auto-merge *low*-risk only; anything riskier routes to a human), a **hash-chained
-  audit ledger**, and idempotent job processing. Policy is **data, not prompt** — a jailbroken agent
-  can't argue past a YAML file. Stubs raise `NotImplementedError`; they never fake a pass.
+A meta-repo **owns no domain logic**. Its product is a *verified composition*:
 
----
+| | |
+|---|---|
+| 🧠 **Lean core** (`src/secure_anything/`, ≤600 LOC, CI-gated) | a **registry** of capabilities · a deterministic **router** · a uniform **gate seam** · a hash-chained, Ed25519-signed **ledger** · the **north-star** metric |
+| 🌍 **Rich ecosystem** (`data/*.yml`) | **capabilities** (scanners, guardrails, red-team, benchmarks, policy, provenance) + **knowledge cards** (papers, books, blogs, people, labs, standards) + **organs** that do the domain work — counts are generated above, never typed by hand |
 
-## 🧒 How it works — a 10-year-old can follow this
-
-> The diagrams below use the Anthropic brand palette (ink `#141413`, paper `#faf9f5`, accents orange
-> `#d97757` / blue `#6a9bcc` / green `#788c5d`) — the same look as
-> [AnyAgent](https://github.com/wjlgatech/anyagent). The text is right here in the page, so you can
-> copy it, change a word, and make your own.
-
-**The big picture — one gate, two kinds of author, one protected branch:**
+The core is small on purpose and the test suite enforces it: `test_core_is_lean` fails the build if
+the composition layer grows past its budget, and `test_core_names_no_vendor_or_protocol` fails if the
+core ever learns what a GitHub is. Domain knowledge lives in an **organ** (ours) or a **satellite**
+(theirs) — never in the middle.
 
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'primaryColor':'#e8e6dc','primaryTextColor':'#141413','primaryBorderColor':'#b0aea5','lineColor':'#b0aea5','secondaryColor':'#faf9f5','tertiaryColor':'#faf9f5','fontFamily':'Poppins, ui-sans-serif, system-ui, -apple-system, Arial, sans-serif'}}}%%
 flowchart LR
-    classDef anthroOrange fill:#d97757,color:#faf9f5,stroke:#141413;
-    classDef anthroBlue fill:#6a9bcc,color:#faf9f5,stroke:#141413;
-    classDef anthroGreen fill:#788c5d,color:#faf9f5,stroke:#141413;
-    classDef anthroInk fill:#141413,color:#faf9f5,stroke:#141413;
-    H([🙋 human devs]) --> G{🛡️ AgentGate}
-    A([🤖 AI agents]) --> G
-    G -->|✅ safe| M([🔒 protected branch])
-    G -->|✋ risky| P([🧑‍⚖️ human approver])
-    G -->|🚫 secret!| R([↩️ request changes])
-    P -->|/agentgate approve| M
-    class G anthroInk;
-    class M anthroGreen;
-    class P anthroBlue;
-    class R anthroOrange;
+    classDef o fill:#d97757,color:#faf9f5,stroke:#141413;
+    classDef b fill:#6a9bcc,color:#faf9f5,stroke:#141413;
+    classDef g fill:#788c5d,color:#faf9f5,stroke:#141413;
+    classDef k fill:#141413,color:#faf9f5,stroke:#141413;
+    I([messy intent]) --> R{router<br/>deterministic}
+    R --> C[registry<br/>data/registry.yml]
+    R --> N[knowledge<br/>data/knowledge.yml]
+    C --> S{{gate seam}}
+    S --> X([exit code + receipt])
+    X --> L[📜 ledger<br/>hash-chained + signed]
+    L --> V([VCC · the north star])
+    class R k; class S k; class L g; class V g; class C b; class N b; class X o;
 ```
 
-🧒 *Like a bouncer at a door. Some people walk right in (safe changes). Some get stopped and have to
-ask a grown-up (risky changes). And if someone's hiding something dangerous (a secret), they're turned
-away. **Robots get carded harder than people.***
+## The status ladder *is* the product
 
-**What happens inside the gate — the five steps:**
-
-```mermaid
-%%{init: {'theme':'base','themeVariables':{'primaryColor':'#e8e6dc','primaryTextColor':'#141413','primaryBorderColor':'#b0aea5','lineColor':'#b0aea5','secondaryColor':'#faf9f5','tertiaryColor':'#faf9f5','fontFamily':'Poppins, ui-sans-serif, system-ui, -apple-system, Arial, sans-serif'}}}%%
-flowchart LR
-    classDef anthroOrange fill:#d97757,color:#faf9f5,stroke:#141413;
-    classDef anthroBlue fill:#6a9bcc,color:#faf9f5,stroke:#141413;
-    classDef anthroGreen fill:#788c5d,color:#faf9f5,stroke:#141413;
-    classDef anthroInk fill:#141413,color:#faf9f5,stroke:#141413;
-    V[🔑 verify<br/>is this really from GitHub?] --> C[👤 classify<br/>human · agent · bot?]
-    C --> K[🔎 check<br/>secrets · protected paths · size]
-    K --> D[⚖️ decide<br/>actor-aware policy]
-    D --> L[📜 audit<br/>write it in permanent ink]
-    class V anthroBlue;
-    class C anthroOrange;
-    class K anthroOrange;
-    class D anthroInk;
-    class L anthroGreen;
-```
-
-🧒 *First: check the letter is really signed (not a fake). Then: who wrote it? Then: look inside for
-anything scary. Then: decide using the rulebook. Last: write down what happened in a special notebook
-where **nobody can erase a page without everyone noticing**.*
-
-**The actor-aware rulebook — robots are held to a stricter bar:**
-
-```mermaid
-%%{init: {'theme':'base','themeVariables':{'primaryColor':'#e8e6dc','primaryTextColor':'#141413','primaryBorderColor':'#b0aea5','lineColor':'#b0aea5','secondaryColor':'#faf9f5','tertiaryColor':'#faf9f5','fontFamily':'Poppins, ui-sans-serif, system-ui, -apple-system, Arial, sans-serif'}}}%%
-flowchart TB
-    classDef anthroOrange fill:#d97757,color:#faf9f5,stroke:#141413;
-    classDef anthroBlue fill:#6a9bcc,color:#faf9f5,stroke:#141413;
-    classDef anthroGreen fill:#788c5d,color:#faf9f5,stroke:#141413;
-    R{risk of the change?} -->|low| LOW
-    R -->|medium| MED
-    R -->|high| HIGH
-    LOW[🙋 human: auto ✅<br/>🤖 agent: auto ✅] 
-    MED[🙋 human: auto ✅<br/>🤖 agent: ✋ ask a human]
-    HIGH[🙋 human: ✋ ask a human<br/>🤖 agent: ✋ ask a human]
-    class LOW anthroGreen;
-    class MED anthroBlue;
-    class HIGH anthroOrange;
-```
-
-🧒 *A grown-up can grab a snack on their own. A robot can grab a snack too — but for anything bigger it
-has to ask first. Nobody, robot or grown-up, gets to touch the stove alone.* It's all in one file:
-[`default_policy.yaml`](src/agentgate/policy/default_policy.yaml).
-
----
-
-## 🤔 Why AgentGate
-
-Today's merge gate answers "do the tests pass?" That's the wrong question when the author might be an
-autonomous agent. AgentGate answers a different one — **"should *this actor* have taken *this action*,
-and can we prove it?"** — and keeps the answer honest by construction:
-
-| | A normal CI check / bot | **AgentGate** |
+| mark | means | moves the north star? |
 |---|---|---|
-| Knows *who* authored the PR | no — a diff is a diff | **classifies human · ai_agent · bot** |
-| Holds agents to a stricter bar | no | **yes — actor-aware policy** (agents auto-merge low-risk only) |
-| Where behavior is defined | buried in code / a prompt | **policy-as-data** (`default_policy.yaml`, versioned & reviewed) |
-| On missing evidence | often silently passes | **escalates** — never auto-approves without evidence |
-| Proof after the fact | a mutable log line | **hash-chained, tamper-evident ledger** |
-| Unimplemented paths | fake a success | **raise `NotImplementedError`** — an honest ❌ over a fake ✅ |
+| ⚪ **candidate** | named, role assigned, metadata API-verified | **no** |
+| 🟡 **digested** | `docs/satellites/<id>.md` + pinned SHA + confirmed licence | **no** |
+| 🟢 **integrated** | its gate **ran here**, exit code recorded in `runs/<id>/` | **yes** |
 
-The full origin story is in [`docs/00-BACKGROUND.md`](docs/00-BACKGROUND.md); the competitive
-landscape and demand signals in [`docs/01-MARKET.md`](docs/01-MARKET.md); the plan (a SPEC per stage)
-in [`ROADMAP.md`](ROADMAP.md).
+`scripts/verify_registry.py` **refuses** a promotion whose on-disk evidence is missing. An
+awesome-list can claim 200 tools; this repo can only claim what left a receipt.
 
 ---
 
-## 🚀 Quick Start
+## Capabilities
 
-```bash
-make install            # pip install -e ".[dev]"   (Python 3.11+)
-make check              # ruff + pytest — THE canonical gate (42 tests, no network)
-make run                # uvicorn on :8099
+<!-- BEGIN GENERATED: capabilities -->
 
-# or the full stack (api + worker + postgres + redis):
-cp .env.example .env    # set GITHUB_WEBHOOK_SECRET
-make docker-up
-```
+**Gate (ours)**
 
-Point a GitHub App's webhook at `POST /webhooks/github` (setup in
-[`docs/03-ARCHITECTURE.md`](docs/03-ARCHITECTURE.md)). For live GitHub App auth, add the optional
-extra: `pip install '.[github]'` (mints installation tokens by signing the App JWT).
+| | id | what it does | license | covers |
+|---|---|---|---|---|
+| 🟡 | [`agentgate`](src/secure_anything/organs/agentgate) | PR firewall for human + AI-agent code changes: verify → classify actor → deterministic checks → optional LLM review → actor-aware decision → hash-chained, Ed25519-signed audit | Proprietary — All Rights Reserved | LLM01, LLM02, LLM03, LLM06, ASI02, ASI03, ASI04, ASI09 |
 
-**See it work, offline, in one command** — the pipeline decides + audits with a fake GitHub:
+**Scanners**
 
-```bash
-make check                              # 42 deterministic tests: verify→classify→check→decide→audit, + approval loop
-python scripts/demo_bypass_caught.py    # the "caught in the act" demo: 5 agent attempts, real gate, tamper-evident ledger
-```
+| | id | what it does | license | covers |
+|---|---|---|---|---|
+| 🟡 | [`codex-security`](https://github.com/openai/codex-security) | CLI + TypeScript SDK that finds, validates (sandbox-executes to kill false positives), and fixes security vulnerabilities in a repo | Apache-2.0 | LLM02, LLM03, LLM05, ASI05 |
+| ⚪ | [`claude-code-security-review`](https://github.com/anthropics/claude-code-security-review) | GitHub Action that uses Claude to security-review a diff — the AI-reviewer counterpart to AgentGate's deterministic checks | MIT | LLM02, LLM05 |
+| ⚪ | [`codeql`](https://github.com/github/codeql) | Dataflow/taint analysis as queries over a code database; the queries powering GitHub code scanning | MIT | LLM05, ASI05 |
+| ⚪ | [`semgrep`](https://github.com/semgrep/semgrep) | Lightweight, offline, pattern-based static analysis across many languages — the deterministic scanner that CAN run inside an offline gate | LGPL-2.1 | LLM02, LLM05, ASI05 |
 
----
+**Guardrails (runtime)**
 
-## 🔬 A human PR and an agent PR, same diff — different outcome
+| | id | what it does | license | covers |
+|---|---|---|---|---|
+| ⚪ | [`guardrails-ai`](https://github.com/guardrails-ai/guardrails) | Structural, type and quality guarantees on LLM output via composable validators | Apache-2.0 | LLM05, LLM09 |
+| ⚪ | [`invariant`](https://github.com/invariantlabs-ai/invariant) | Guardrails for agent development — trace-level policies over tool calls and agent behaviour | Apache-2.0 | ASI02, ASI03, ASI07 |
+| ⚪ | [`llm-guard`](https://github.com/protectai/llm-guard) | Input/output scanning toolkit for LLM interactions — prompt-injection, PII, toxicity, secrets leakage | MIT | LLM01, LLM02, LLM07 |
+| ⚪ | [`nemo-guardrails`](https://github.com/NVIDIA-NeMo/Guardrails) | Programmable rails (Colang) constraining what an LLM app may say and do — policy as executable dialogue flow | NOASSERTION ⚠️ pointer-only | LLM01, LLM06, ASI01 |
+| ⚪ | [`purplellama`](https://github.com/meta-llama/PurpleLlama) | Meta's LLM security toolset; includes LlamaFirewall (prompt-injection blocking, insecure-code detection, misaligned-reasoning checks) and CyberSecEval | NOASSERTION ⚠️ pointer-only | LLM01, LLM05, ASI01, ASI02 |
+| ⚪ | [`rebuff`](https://github.com/protectai/rebuff) | Multi-layer prompt-injection detector (heuristics, LLM check, vector DB of known attacks, canary tokens) | Apache-2.0 | LLM01 |
 
-The heart of *"for human + AI agents"*: the **same medium-risk change** (say, a ~1,200-line diff) is
-**auto-approved for a human** but **escalated for an agent**, because the policy holds agents to a
-stricter bar. (A *high*-risk change — e.g. a protected path — escalates for **both**; the divergence
-is at the medium tier.)
+**Red team**
 
-```python
-from agentgate.worker import evaluate
-from agentgate.domain import ActorKind
-# a ~1,200-line diff → medium risk (between max_churn 800 and hard_max_churn 3000)
-evaluate(pr(ActorKind.HUMAN),    changes, policy).action   # → AUTO_APPROVE  (human auto-merges medium)
-evaluate(pr(ActorKind.AI_AGENT), changes, policy).action   # → ESCALATE      (agent needs a human ≥ medium)
-```
+| | id | what it does | license | covers |
+|---|---|---|---|---|
+| ⚪ | [`agentic-security`](https://github.com/msoedov/agentic_security) | Agentic LLM vulnerability scanner / AI red-teaming kit with fuzzing and multi-step attack chains | Apache-2.0 | LLM01, ASI01, ASI02 |
+| ⚪ | [`damn-vulnerable-llm-agent`](https://github.com/ReversecLabs/damn-vulnerable-llm-agent) | A deliberately vulnerable ReAct agent — the training range for practising agent exploitation and defence | Apache-2.0 | ASI01, ASI02, ASI03 |
+| ⚪ | [`garak`](https://github.com/NVIDIA/garak) | LLM vulnerability scanner — a large probe library (jailbreak, leakage, toxicity, injection) run as a repeatable sweep | Apache-2.0 | LLM01, LLM02, LLM07, LLM09, ASI01 |
+| ⚪ | [`promptfoo`](https://github.com/promptfoo/promptfoo) | Test prompts, agents and RAG; red-teaming and vulnerability scanning with a CI-gateable assertion model | MIT | LLM01, LLM05, LLM09, ASI01, ASI02 |
+| ⚪ | [`promptmap`](https://github.com/utkusen/promptmap) | Security scanner for custom LLM applications — rule-driven prompt-injection test suite | GPL-3.0 | LLM01, LLM07 |
+| ⚪ | [`pyrit`](https://github.com/microsoft/PyRIT) | Microsoft's Python Risk Identification Tool for generative AI — automated, orchestrated red-teaming | MIT | LLM01, LLM09, ASI01 |
 
-`evaluate(pr, changes, policy)` is the **pure, deterministic core** — no network, no key, no
-database. That's why the whole decision surface is testable offline. Wire it to GitHub with
-`process_job()` (idempotent, audited, posts back).
+**Benchmarks**
 
-## 🔎 The checks — deterministic evidence collectors
+| | id | what it does | license | covers |
+|---|---|---|---|---|
+| ⚪ | [`agent-security-bench`](https://github.com/agiresearch/ASB) | Agent Security Bench (ASB) — 16 attack types × 11 defences × 10 scenarios across 400+ tools and 13 LLM backbones | MIT | LLM01, LLM04, ASI01, ASI02, ASI06 |
+| ⚪ | [`agentdojo`](https://github.com/ethz-spylab/agentdojo) | Dynamic environment for evaluating indirect prompt-injection attacks AND defences on tool-using agents (97 tasks, 629 security cases) | MIT | LLM01, ASI01, ASI02 |
+| ⚪ | [`eval-anything`](https://github.com/wjlgatech/eval-anything) | The family's eval OS — strict scoring, guardrail metrics that may never degrade, error bars on deltas; supplies session telemetry (tool_error_rate, subagents, files_mutated) as gate evidence | — | LLM09 |
+| ⚪ | [`injecagent`](https://github.com/uiuc-kang-lab/InjecAgent) | First systematic benchmark for indirect prompt injection in tool-integrated LLM agents (17 user tools, 62 attacker tools) | MIT | LLM01, ASI02 |
+| ⚪ | [`pint-benchmark`](https://github.com/lakeraai/pint-benchmark) | Benchmark for prompt-injection DETECTORS — measures the guardrail, not the model | MIT | LLM01 |
 
-Each check answers one question about the diff, offline, and reports a **severity** (its risk *if* it
-fails) and whether it's **blocking** (a hard `request_changes`, not an escalation):
+**Policy engines**
 
-| Check | Fails when… | Severity | Blocking |
+| | id | what it does | license | covers |
+|---|---|---|---|---|
+| ⚪ | [`opa`](https://github.com/open-policy-agent/opa) | General-purpose policy engine (Rego) — decouples policy-as-data/code from the service enforcing it | Apache-2.0 | LLM06, ASI03 |
+
+**Threat modelling**
+
+| | id | what it does | license | covers |
+|---|---|---|---|---|
+| ⚪ | [`agent-wiz`](https://github.com/Repello-AI/Agent-Wiz) | CLI that extracts an agent's structure from code and produces a threat model / attack-surface visualization | Apache-2.0 | ASI02, ASI07, ASI10 |
+| ⚪ | [`decider`](https://github.com/cisagov/decider) | CISA's guided tool for mapping observed behaviour to MITRE ATT&CK techniques | NOASSERTION ⚠️ pointer-only | — |
+
+**Provenance & supply chain**
+
+| | id | what it does | license | covers |
+|---|---|---|---|---|
+| ⚪ | [`cosign`](https://github.com/sigstore/cosign) | Container/artifact signing and verification, keyless via Sigstore | Apache-2.0 | LLM03, ASI04 |
+| ⚪ | [`in-toto-attestation`](https://github.com/in-toto/attestation) | Standard format for signed statements about a software artifact (the attestation envelope) | NOASSERTION ⚠️ pointer-only | LLM03, ASI04 |
+| ⚪ | [`rekor`](https://github.com/sigstore/rekor) | Sigstore's append-only, publicly auditable transparency log — the external anchor a private hash-chain needs | Apache-2.0 | LLM03, ASI04 |
+| ⚪ | [`slsa`](https://github.com/slsa-framework/slsa) | Supply-chain Levels for Software Artifacts — the graded framework for build-integrity claims | NOASSERTION ⚠️ pointer-only | LLM03, ASI04 |
+
+**Skill supply chain**
+
+| | id | what it does | license | covers |
+|---|---|---|---|---|
+| ⚪ | [`skills-registry`](https://github.com/vercel-labs/skills) | The open agent-skills registry and installer (`npx skills add <owner/repo>`) — the de-facto distribution channel for SKILL.md capabilities across 20+ agents | MIT | LLM03, ASI04 |
+
+**Protocols**
+
+| | id | what it does | license | covers |
+|---|---|---|---|---|
+| ⚪ | [`mcp-spec`](https://github.com/modelcontextprotocol/modelcontextprotocol) | Model Context Protocol specification — the tool/agent boundary that ASI02 (tool misuse) and ASI07 (inter-agent comms) are about | NOASSERTION ⚠️ pointer-only | ASI02, ASI04, ASI07 |
+
+**Engines**
+
+| | id | what it does | license | covers |
+|---|---|---|---|---|
+| ⚪ | [`anyagent`](https://github.com/wjlgatech/anyagent) | Build, grade, improve & accountably ship any agent app; the goal-10x front door that drives this repo | — | — |
+<!-- END GENERATED: capabilities -->
+
+## Knowledge base
+
+Every card carries the **tier of evidence that actually backs it**, and a date. ✅ `verified` was read
+at the primary source; 🟢 `corroborated` has ≥2 independent secondary sources; 🟠 `claimed` is one
+interested party's assertion (never restate its numbers as fact); 🔴 `disputed` is kept on purpose —
+a correction retained beats a claim repeated.
+
+<!-- BEGIN GENERATED: knowledge -->
+
+**Concepts**
+
+| evidence | what | by | why it matters |
 |---|---|---|---|
-| `secret_scan` | a credential/API key appears in the diff | high | **yes** — hard block |
-| `touched_paths` | a protected glob is touched (`.github/workflows/**`, `**/auth/**`, `policy/**`, migrations, Dockerfiles) | high (configurable) | no — escalate |
-| `diff_size` | churn exceeds `max_churn` / `hard_max_churn` | medium / high | no — escalate |
-| `agent_audit` *(opt-in)* | the [agent-audit](https://github.com/HeadyZhang/agent-audit) SAST (OWASP Agentic Top-10) flags the added code; tool unavailable ⇒ escalate, never a fake pass | mapped from finding level | no — escalate |
+| 🟠 claimed | [The Agents Rule of Two](https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/) | Meta (generalization of the lethal trifecta) | Turns the trifecta into a deployment rule a policy file can actually encode. |
+| ✅ verified | [Defeating prompt injection by DESIGN (CaMeL): capability-based control-flow integrity for agents](https://arxiv.org/abs/2503.18813) | Debenedetti et al. (Google DeepMind / ETH) | The strongest argument that agent security is an ARCHITECTURE problem, not a classifier problem. It is the intellectual justification for secure-anyth… |
+| 🟢 corroborated | [The lethal trifecta for AI agents](https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/) | Simon Willison | The single most useful triage question for any agent deployment, and it is architectural rather than detection-based — which means it can be gated, no… |
+| ✅ verified | No evidence means no (the unmeasured item can never pass a blocking gate) | secure-anything (house discipline, from anyagent's BRACE work) | The difference between a security report and a security theatre report. |
 
-`agent_audit` wraps an external SAST as an injectable scanner seam (offline-deterministic in tests);
-it's disabled by default — see [`docs/07-PRIOR-ART.md`](docs/07-PRIOR-ART.md) for the prior-art context.
+**Papers**
 
-Add one under `src/agentgate/checks/`, register it in `checks/registry.py`, add its config to the
-policy schema, and write a deterministic test. (Design DNA: AnyAgent's `EvidenceCollector` seam —
-*no evidence ⇒ escalate*, never a fake pass.)
+| evidence | what | by | why it matters |
+|---|---|---|---|
+| 🟠 claimed | [Codex Security reported catch rate (70% on 23 seeded/historical vulnerabilities)](https://github.com/openai/codex-security) | OpenAI, via secondary reporting | A vendor-reported figure about its own product, relayed by press — exactly the class of number this repo refuses to launder into a fact. Recorded so t… |
+| ✅ verified | [AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents](https://arxiv.org/abs/2406.13352) | Edoardo Debenedetti + 5 co-authors | A dynamic benchmark of realistic tool-use tasks plus security test cases, designed so new attacks and defences can be added rather than frozen. |
+| ✅ verified | [A Survey on Agentic Security: Applications, Threats and Defenses](https://arxiv.org/abs/2510.06445) | Asif Shahriar + 4 co-authors | Field-wide survey of agentic security — the best single entry point for someone new to the area. |
+| ✅ verified | [How Vulnerable Are AI Agents to Indirect Prompt Injections? Insights from a Large-Scale Public Competition](https://arxiv.org/abs/2603.15714) | Mateusz Dziemian + 30 co-authors (UK AISI × Gray Swan) | The strongest available empirical base rate for 'how likely is my agent to be broken'. Cite this rather than a vendor's catch-rate slide. |
+| ✅ verified | [Defeating Prompt Injections by Design](https://arxiv.org/abs/2503.18813) | Edoardo Debenedetti + 9 co-authors | The CaMeL system: a protective layer that extracts control and data flow from the trusted query so untrusted content can never alter the program's con… |
+| ✅ verified | [Design Patterns for Securing LLM Agents against Prompt Injections](https://arxiv.org/abs/2506.08837) | Luca Beurer-Kellner + 13 co-authors | The most directly actionable paper in this list: each pattern is a design a gate can check for. |
+| ✅ verified | [Adding Error Bars to Evals: A Statistical Approach to Language Model Evaluations](https://arxiv.org/abs/2411.00640) | Evan Miller (Anthropic) | Binding on this repo: every catch-rate delta we publish carries error bars. |
+| ✅ verified | [InjecAgent: Benchmarking Indirect Prompt Injections in Tool-Integrated Large Language Model Agents](https://arxiv.org/abs/2403.02691) | Qiusi Zhan + 3 co-authors | The first systematic benchmark for indirect prompt injection against tool-using agents. |
+| ✅ verified | [A StrongREJECT for Empty Jailbreaks](https://arxiv.org/abs/2402.10260) | Alexandra Souly + 10 co-authors | Binding on this repo: AgentGate's benchmarking rules already require StrongREJECT-style strict scoring so a 'technically caught' never inflates a catc… |
 
-## 🧑‍⚖️ The human-approval loop — authorization, not just identity
+**Books**
 
-An escalated PR is unmergeable until a human with **write access** approves it by commenting:
+| evidence | what | by | why it matters |
+|---|---|---|---|
+| 🟢 corroborated | [Adversarial AI Attacks, Mitigations, and Defense Strategies](https://www.packtpub.com/en-us/product/adversarial-ai-attacks-mitigations-and-defense-strategies-9781835087985) | John Sotiropoulos | The most thorough book-length treatment of mapping AI attacks onto existing security standards — which is exactly M3's job. |
+| 🟢 corroborated | [The Developer's Playbook for Large Language Model Security: Building Secure AI Applications](https://www.oreilly.com/library/view/the-developers-playbook/9781098162191/) | Steve Wilson | Practitioner's guide to LLM application security from the co-creator of the OWASP Top 10 for LLMs. The book-length companion to the control list in da… |
 
-```
-/agentgate approve
-```
+**Blogs**
 
-AgentGate consumes the `issue_comment` webhook, then verifies the commenter's repo permission
-against GitHub (`admin | maintain | write`) — a comment is only an *identity claim*, so the
-**authorization** check is load-bearing and unit-tested directly. The grant flips the check-run to
-`success` (unblocking merge) and is written to the ledger with the approver + timestamp; a **refusal**
-(insufficient access) is audited too, never silent. Why comment-command over a web UI:
-[ADR-001](docs/adr/001-approval-channel.md).
+| evidence | what | by | why it matters |
+|---|---|---|---|
+| ✅ verified | [Embrace The Red](https://embracethered.com/blog/) | Johann Rehberger (wunderwuzzi) | Where new agent attack classes tend to appear FIRST, with a runnable PoC rather than a taxonomy. Our red-team fixture backlog should track it. |
+| 🟢 corroborated | [Simon Willison's Weblog](https://simonwillison.net/) | Simon Willison | Highest signal-to-noise source for whether a proposed defence is actually new. |
 
-## 📜 The audit ledger — court-grade, not a log file
+**People**
 
-Every consequential event (a decision, an approval, a refusal) is appended as a **hash-chained**
-record: `hash = sha256(prev_hash | kind | canonical(payload))`. Re-walking the chain detects any
-insertion, deletion, or edit of history — turning "the agent did X" into evidence you can stand behind
-(EU AI Act, FINRA auditability).
+| evidence | what | by | why it matters |
+|---|---|---|---|
+| 🟢 corroborated | [Edoardo Debenedetti](https://arxiv.org/a/debenedetti_e_1) | — | Lead author of both AgentDojo (the benchmark) and CaMeL (the design-level defence) |
+| 🟢 corroborated | [Florian Tramèr](https://www.floriantramer.com/) | — | ML security and privacy research; co-author on adaptive attacks that bypass jailbreak and injection defences |
+| ✅ verified | [Johann Rehberger (wunderwuzzi)](https://embracethered.com/blog/) | — | Practical, PoC-first offensive research against deployed AI assistants and computer-use agents |
+| 🟢 corroborated | [Nicholas Carlini](https://nicholas.carlini.com/) | — | Adversarial machine learning; showing that proposed defences usually break under adaptive attack |
+| 🟢 corroborated | [Simon Willison](https://simonwillison.net/) | — | Naming and popularising prompt-injection failure modes; the lethal trifecta; the dual-LLM pattern |
+| 🟢 corroborated | [Steve Wilson](https://www.oreilly.com/library/view/the-developers-playbook/9781098162191/) | — | Leading the OWASP Top 10 for LLM Applications; author of the O'Reilly LLM security playbook |
 
-**Optional Ed25519 signing** ([ADR-003](docs/adr/003-ed25519-audit-signing.md)) closes the operator-
-tamper gap: hash-chaining proves *internal consistency*, but an operator who can rewrite rows can
-recompute the whole chain. Set `AGENTGATE_AUDIT_KEY` to a PKCS8 PEM and the ledger signs each chain
-head — now forging history requires the *key*, not just DB write access. `GET /audit/verify` returns
-`{"intact", "signed"}`; `signer=None` is the unchanged, backward-compatible hash-chain.
+**Labs**
 
-```mermaid
-%%{init: {'theme':'base','themeVariables':{'primaryColor':'#e8e6dc','primaryTextColor':'#141413','primaryBorderColor':'#b0aea5','lineColor':'#b0aea5','secondaryColor':'#faf9f5','tertiaryColor':'#faf9f5','fontFamily':'Poppins, ui-sans-serif, system-ui, -apple-system, Arial, sans-serif'}}}%%
-flowchart LR
-    classDef anthroInk fill:#141413,color:#faf9f5,stroke:#141413;
-    classDef anthroGreen fill:#788c5d,color:#faf9f5,stroke:#141413;
-    classDef anthroOrange fill:#d97757,color:#faf9f5,stroke:#141413;
-    G([genesis]) --> E1[decision #1<br/>hash = H_prev∘payload] --> E2[approval #2<br/>hash = H1∘payload] --> E3[decision #3]
-    E2 -.tamper.-> X[✏️ edit page 2] -.->|verify| F([❌ chain broken])
-    class E1 anthroInk;
-    class E2 anthroInk;
-    class E3 anthroInk;
-    class F anthroOrange;
-```
+| evidence | what | by | why it matters |
+|---|---|---|---|
+| 🟢 corroborated | [Anthropic Frontier Red Team](https://www.anthropic.com/research/team/frontier-red-team) | — | Stress-testing frontier model capabilities to produce strategic warning about emerging risk |
+| 🟢 corroborated | [ETH Zurich SPY Lab](https://spylab.ai/) | — | AgentDojo and much of the rigorous academic work on agent injection attacks and defences |
+| 🟢 corroborated | [Gray Swan AI](https://www.grayswan.ai/research) | — | Ran the agent red-teaming arena reported (with UK AISI) in arXiv 2603.15714 — see paper-aisi-grayswan-competition for the peer-reviewed numbers. |
+| 🟢 corroborated | [NIST CAISI (Center for AI Standards and Innovation)](https://www.nist.gov/) | — | US standards-side AI security work; co-published the large-scale agent red-teaming analysis; running the AI Agent Standards Initiative |
+| 🟢 corroborated | [UK AI Security Institute (AISI)](https://www.aisi.gov.uk/) | — | Directly relevant to us: secure-anything IS a monitor. The Control Red Team's premise — that monitors need their own adversary — is the argument for A… |
 
-🧒 *A magic notebook where each new page is stamped with a fingerprint of the page before it. Tear one
-out or scribble on it, and every fingerprint after it stops matching — so cheating is **obvious**.*
+**Standards**
 
-`GET /audit/verify` → `{"intact": true}`.
+| evidence | what | by | why it matters |
+|---|---|---|---|
+| 🔴 disputed | [BRACE framework (agent security controls)](https://braceframework.org) | — | Kept as a card, not deleted, because the correction is the value: DO NOT use BRACE in any external messaging. Use OWASP LLM / OWASP Agentic / MITRE AT… |
+| 🟢 corroborated | [EU AI Act — Article 12 (record-keeping / automatic logging)](https://artificialintelligenceact.eu/article/12/) | — | The clearest regulatory tailwind for an audit-of-record product — a hash-chained, signed ledger is a direct answer to an Article 12 question. |
+| 🟢 corroborated | [ISO/IEC 42001 — AI Management System](https://www.iso.org/standard/81230.html) | — | The certification enterprises will be asked for. A signed, replayable ledger is the kind of evidence its audits want. |
+| 🟢 corroborated | [MITRE ATLAS](https://atlas.mitre.org/) | — | Technique IDs for AI-specific adversary behaviour. Candidate third framework for the north-star denominator at M3. |
+| 🟢 corroborated | [NIST AI Risk Management Framework (AI RMF 1.0)](https://www.nist.gov/itl/ai-risk-management-framework) | — | Voluntary US risk-management structure — Govern / Map / Measure / Manage |
 
----
+**Skill libraries**
 
-## 🧠 Architecture: I/O edge ∘ pure core
-
-The pipeline splits a thin **I/O edge** from a **pure, deterministic core**, so the whole decision
-surface runs in tests with no network, no key, and no real database — the same discipline that lets
-AnyAgent test to its seams.
-
-```
-src/agentgate/
-  webhooks/     # verify HMAC (first security gate) + parse PR / issue_comment events
-  actor.py      # classify author: human · ai_agent · bot   ← the "for human + AI agents" heart
-  checks/       # deterministic evidence collectors (secret · paths · size) — pure, offline
-  policy/       # policy-as-data: schema + default_policy.yaml + loader (a jailbreak can't argue past YAML)
-  decision.py   # combine checks (+ optional LLM review) → an actor-aware Decision  ← PURE
-  review/       # optional LLM risk-review seam (raises until wired — no fake pass)
-  audit.py      # hash-chained, tamper-evident ledger (+ optional Ed25519 signing)
-  signing.py    # Ed25519 signer seam — sign/verify chain heads (ADR-003), lazy-imported
-  github_client.py  # GitHub REST seam: fetch changeset · post decision · approval (httpx-injectable)
-  worker.py     # evaluate() [PURE] → audit → persist → post back;  handle_job() dispatch
-  main.py       # FastAPI: webhook entrypoint + /healthz + /reviews/recent + /audit/verify
-```
-
-### The seams (every external boundary has a real body **and** a test fake)
-
-| Seam | What it swaps | Bodies |
-|---|---|---|
-| `Queue` | how jobs move | **in-process deque** (dev) · **Redis** (scale-out) |
-| `GitHubClient` | the GitHub REST calls | **real (httpx)** · **`MockTransport` / fake** in tests |
-| `Check` | one evidence question | secret · touched-paths · diff-size (+ your own) |
-| `Policy` | all gate behavior | **`default_policy.yaml`** (data, not code) |
-| LLM `review` | optional risk read | seam present; **raises until wired** (honest, not faked) |
-
-Because the GitHub boundary is injectable, tests exercise the **real** request-building code
-(pagination, payload shapes, the decision→check-run mapping, the authorization check) with zero
-network — which is exactly how dogfooding caught the pagination infinite-loop bug.
+| evidence | what | by | why it matters |
+|---|---|---|---|
+| 🟢 corroborated | [The agent-skill supply chain audits a rounding error of what it distributes](https://www.skills.sh/audits) | secure-anything (read at skills.sh, 2026-08-03) | This is ASI04 (agentic supply chain) in its most concrete form, and it is the exact shape of problem this repo exists for. A skill is procedural instr… |
+| 🟠 claimed | [Agent skill libraries are an unaudited supply chain](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/) | secure-anything (synthesis of 2026 ecosystem studies) | This is ASI04 (agentic supply chain) arriving in our own tooling. House rule, already in force in anyagent: index skills only, load a body on trigger … |
+<!-- END GENERATED: knowledge -->
 
 ---
 
-## ✅ Tested — the core is offline & deterministic
+## The AgentGate organ — the PR firewall
+
+The repo's first organ, and until 2026-08-03 its whole product: an **actor-aware PR firewall** that
+classifies the author (human · ai_agent · bot), holds agents to a stricter bar via
+**policy-as-data**, and writes every decision to a **hash-chained, Ed25519-signed ledger**.
+
+→ Full documentation, diagrams and architecture: **[docs/organs/agentgate/README.md](docs/organs/agentgate/README.md)**
+· its own roadmap: **[docs/organs/agentgate/ROADMAP.md](docs/organs/agentgate/ROADMAP.md)**
+
+---
+
+## Quick start
 
 ```bash
-make check        # ruff check + pytest → 42 passing, ~0.1s, no network, no key, no real disk
+make install     # pip install -e ".[dev]"   (Python 3.11+)
+make check       # THE canonical gate: ruff + pytest + charter + drift + registry + self-audit
+make northstar   # compute Verified Control Coverage from data/, offline
+make route Q="scan my repo for vulnerabilities"   # drive the router directly
 ```
 
-- Unsigned webhook → `401`; signed PR event → `202 queued`; signed `/agentgate approve` → `202 queued`
-  (approval); `GET /audit/verify` → `intact: true` — all live-verified through the app.
-- `make check` is **the** canonical gate — CI runs exactly it, and an `anyagent goal --drive` run
-  discovers it. An honest ❌ beats a fake ✅; stubs raise, they don't lie.
+`make check` is offline and deterministic: no network, no API key. Capabilities that need a
+credential (like `codex-security`) are **NOT_MEASURED** inside the gate and are reported by name —
+never silently passed.
 
 ---
 
-## 📚 Docs
+## Honest edges
+
+- **VCC is 0%.** Nothing has been integrated with a run receipt yet. M2 changes that; until then the
+  ecosystem is indexed, not proven.
+- **Half the north-star denominator is `corroborated`, not `verified`.** The OWASP Agentic Top 10
+  titles come from four agreeing secondary sources because the primary is a PDF download; see the
+  note in `data/controls.yml`.
+- **Control mappings are ours.** Which capability covers which OWASP item is a judgement call we
+  authored (`mappings_asserted_by: secure-anything`), not the upstream project's claim. Dispute one
+  via [`.github/ISSUE_TEMPLATE/gate-dispute.md`](.github/ISSUE_TEMPLATE/gate-dispute.md).
+- **The ledger is tamper-evident, not tamper-proof.** Hash-chaining plus Ed25519 defeats everyone
+  except the operator who holds both the key and the database. External anchoring (Rekor / WORM /
+  RFC3161) is unbuilt — so this repo does not use the word "tamper-proof". `rekor` is in the
+  registry precisely because it closes this gap.
+- **Freshness is measured, not promised.** Several satellites have had no upstream push in months;
+  the registry records `upstream_pushed_at` so STALE is a fact, not a vibe.
+- **A green gate is evidence, not an audit opinion** — not a SOC 2 report, not a permit, not legal
+  advice about the EU AI Act.
+
+---
+
+## Docs
 
 | Doc | What's in it |
 |---|---|
-| [`ROADMAP.md`](ROADMAP.md) | Single source of truth — the 5 phases, each with a SPEC + a runnable Definition of Done |
-| [`docs/00-BACKGROUND.md`](docs/00-BACKGROUND.md) | The origin story — build → market read → this product |
-| [`docs/01-MARKET.md`](docs/01-MARKET.md) | Competitive landscape + demand signals |
-| [`docs/03-ARCHITECTURE.md`](docs/03-ARCHITECTURE.md) | The pipeline, the GitHub App wiring, the data model |
-| [`docs/04-SECURITY.md`](docs/04-SECURITY.md) | Threat model, trust boundaries, the audit ledger |
-| [`docs/05-POLICY.md`](docs/05-POLICY.md) | Policy-as-data: the schema and how to tune the gate |
-| [`docs/DEMO.md`](docs/DEMO.md) | The "caught in the act" demo — runs today (`python scripts/demo_bypass_caught.py`) |
-| [`docs/06-DESIGN-PARTNERS.md`](docs/06-DESIGN-PARTNERS.md) | Design-partner program: buyer hypotheses, outreach, the 90-day pilot |
-| [`docs/specs/`](docs/specs/) | One SPEC per phase — the contract; the code proves it |
-| [`docs/adr/`](docs/adr/) | Architecture decisions ([ADR-001: approval channel](docs/adr/001-approval-channel.md), [ADR-002: fail-closed](docs/adr/002-fail-closed-and-separation-of-duties.md)) |
-| [`AGENTS.md`](AGENTS.md) | Contributor guide for humans **and** AI agents — the one rule: `make check` must pass |
+| [`docs/VISION.md`](docs/VISION.md) | The charter — vision, mission, north star, operating modes, non-goals |
+| [`GOAL.md`](GOAL.md) | The founding intent recompiled into 7 machine-verifiable goals |
+| [`ROADMAP.md`](ROADMAP.md) | The milestone arc M0→M5, each with a runnable DoD |
+| [`data/`](data/) | **The single source of truth** — registry · knowledge · controls · ainative |
+| [`eval/secure-anything.md`](eval/secure-anything.md) | Every routing claim, each one a pytest case (including the refusals) |
+| [`docs/META_REPO_PLAYBOOK.md`](docs/META_REPO_PLAYBOOK.md) | The doctrine this repo is built to |
+| [`docs/organs/agentgate/`](docs/organs/agentgate/) | The PR-firewall organ: README, roadmap, specs |
+| [`docs/adr/`](docs/adr/) | Architecture decisions ([004: fail-closed policy fallback](docs/adr/004-fail-closed-policy-fallback.md), [005: meta-repo restructure](docs/adr/005-meta-repo-restructure.md)) |
+| [`AGENTS.md`](AGENTS.md) | Contributor guide for humans **and** AI agents — the one rule: `make check` passes |
 
 ---
 
-## 📄 License
+## License
 
 Private and proprietary — see [`LICENSE`](LICENSE). This repository is confidential; access does not
-grant any license.
+grant any license. Satellites keep their own licences; unresolved licences are treated as
+restrictive and marked **pointer-only**.

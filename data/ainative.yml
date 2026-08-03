@@ -1,0 +1,89 @@
+# ainative.yml — the repo audits ITSELF.
+#
+# These are not slogans: each principle names a check that scripts/ainative.py runs against
+# in-repo evidence, and the aggregate score is gated in CI. A discipline regression fails the
+# build. A principle with no executable check is not allowed in this file.
+#
+# Includes the META laws (§4 of docs/META_REPO_PLAYBOOK.md) — a meta-repo must audit its
+# meta-ness, not just its hygiene.
+
+version: "1.0"
+updated: "2026-08-03"
+gate_min_score: 90
+
+principles:
+
+  - id: spec-as-data
+    statement: "Curated knowledge lives in data/*.yml; every published surface is GENERATED and drift-gated."
+    check: "data/{registry,knowledge,controls,ainative}.yml all parse; `scripts/build.py --check` reports no drift."
+    weight: 3
+
+  - id: lean-core
+    statement: "The composition core stays small enough to hold in your head — leanness is a budget, not an aspiration."
+    check: "Non-organ modules under src/secure_anything/ total <= 600 LOC (GOAL.md G2)."
+    weight: 3
+
+  - id: no-domain-logic-in-core
+    statement: "A meta-repo owns no domain logic. The moment it implements a domain inline, it has failed."
+    check: "No core module imports from organs/, and no core module name or import references a vendor/protocol (github, semgrep, webhook, ...)."
+    weight: 3
+
+  - id: satellites-never-vendored
+    statement: "An external capability is a pointer + a pinned SHA + a digest. Never a fork, never a vendored tree."
+    check: "No directory under the repo contains a checked-out copy of an external capability's source (vendor/, third_party/, or a .git inside src/)."
+    weight: 3
+
+  - id: status-ladder-enforced
+    statement: "Naming a thing is not integrating it. Promotion requires on-disk evidence, and the validator refuses without it."
+    check: "Every `digested` capability has docs/satellites/<id>.md and (for external kinds) a pinned_sha; every `integrated` capability has a run receipt under runs/<id>/."
+    weight: 3
+
+  - id: aggregate-exit-codes-not-claims
+    statement: "The gate seam reduces every capability to a comparable exit code plus evidence — never a vendor's prose claim."
+    check: "GateResult carries an int exit_code and an evidence reference; the aggregator has a test proving unmeasured items cannot produce a pass."
+    weight: 3
+
+  - id: no-evidence-means-no
+    statement: "An unmeasured or unreachable item is excluded and reported as `not measured` — never a fake pass."
+    check: "A test asserts that a NOT_MEASURED result cannot make a blocking aggregate green."
+    weight: 3
+
+  - id: evidence-tiered-knowledge
+    statement: "Every knowledge claim carries the tier of evidence that actually backs it, and a date."
+    check: "Every card in data/knowledge.yml has `evidence` in {verified, corroborated, claimed, disputed} and a `verified_at`; every non-`verified` card that asserts a number carries an `unconfirmed` note."
+    weight: 2
+
+  - id: license-honesty
+    statement: "An unresolved license is treated as restrictive, not as permission."
+    check: "Every capability with license NOASSERTION has license_confirmed: false and is not marked integrated."
+    weight: 2
+
+  - id: charter-first
+    statement: "The repo was born with a charter, and the charter is gated like code."
+    check: "docs/VISION.md, GOAL.md and ROADMAP.md exist and contain their required headings (scripts/manifest_gate.py)."
+    weight: 2
+
+  - id: north-star-computable
+    statement: "The one number that says whether we are winning is computed offline from the repo, not asserted in prose."
+    check: "`python3 scripts/northstar.py` exits 0 offline and prints a VCC fraction derived from data/."
+    weight: 2
+
+  - id: router-is-executable
+    statement: "Routing claims are pytest cases, including the refusals."
+    check: "Every case in eval/secure-anything.md has a corresponding assertion in tests/test_router_eval.py."
+    weight: 2
+
+  - id: gate-is-offline
+    statement: "The finish line is deterministic and offline; all network lives behind explicit sync commands."
+    check: "`make check` performs no network I/O; network-requiring capabilities are flagged in the registry and excluded from the gate."
+    weight: 2
+
+  - id: tamper-evident-record
+    statement: "Everything consequential appends to a hash-chained, signed ledger."
+    check: "secure_anything.ledger exposes append/verify with chain + signature tests, and verify() fails on a mutated payload."
+    weight: 3
+
+  - id: honest-edges
+    statement: "Limitations are stated where users read them, not buried."
+    check: "README.md contains an `## Honest edges` section and docs/VISION.md contains its own."
+    weight: 2

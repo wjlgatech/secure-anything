@@ -1,0 +1,557 @@
+# knowledge.yml — the ecosystem's KNOWLEDGE BASE: the papers, people, labs, books, blogs,
+# standards and concepts that a gate decision should be able to cite.
+#
+# A registry entry answers "what can run?". A knowledge card answers "why is that the right
+# thing to run, and who established it?". Both are generated into the flagship skill.
+#
+# EVIDENCE LADDER (enforced by scripts/verify_knowledge.py — a card may not claim a tier its
+# fields cannot support):
+#   verified     = read at the PRIMARY source (arXiv API, publisher page, the author's own site)
+#                  on verified_at. Requires a resolvable url.
+#   corroborated = >=2 independent secondary sources agree; primary not directly read.
+#   claimed      = asserted by one interested party (usually a vendor about its own product).
+#                  NEVER cite a `claimed` number as a fact.
+#   disputed     = sources conflict, or the primary source could not be reached. Kept ON PURPOSE:
+#                  a correction retained is worth more than a claim repeated.
+#
+# All arXiv entries below were resolved through the arXiv API on 2026-08-03 (id -> title, authors,
+# publication date all matched). No paper here was cited from memory.
+
+version: "1.0"
+updated: "2026-08-03"
+
+cards:
+
+  # ═══════════════════════════ concepts (the load-bearing mental models) ═════════════════════
+  - id: lethal-trifecta
+    kind: concept
+    title: "The lethal trifecta for AI agents"
+    by: "Simon Willison"
+    url: https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/
+    year: 2025
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    summary: >-
+      An agent becomes exploitable when it combines three things: access to private data,
+      exposure to untrusted content, and the ability to communicate externally. Remove any one
+      leg and exfiltration stops being possible.
+    why_it_matters: >-
+      The single most useful triage question for any agent deployment, and it is architectural
+      rather than detection-based — which means it can be gated, not just scanned for.
+    covers: [LLM01, LLM02, ASI01, ASI03]
+    triggers: ["lethal trifecta", "why did my agent leak", "is this agent safe to deploy", "exfiltration risk", "three legs"]
+
+  - id: agents-rule-of-two
+    kind: concept
+    title: "The Agents Rule of Two"
+    by: "Meta (generalization of the lethal trifecta)"
+    url: https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/
+    year: 2025
+    evidence: claimed
+    verified_at: "2026-08-03"
+    summary: >-
+      An agent session should satisfy at most two of: (a) processing untrusted input,
+      (b) accessing sensitive systems, (c) changing state externally.
+    why_it_matters: "Turns the trifecta into a deployment rule a policy file can actually encode."
+    covers: [LLM06, ASI01, ASI03]
+    unconfirmed: >-
+      Attributed to Meta via secondary coverage in this session; the primary Meta publication was
+      NOT read. The url above points to the related trifecta post, not to a Meta primary source.
+      Do not quote as Meta's exact wording until the primary is pinned.
+    triggers: ["rule of two", "how much autonomy is safe", "deployment rule"]
+
+  - id: camel-control-flow-integrity
+    kind: concept
+    title: "Defeating prompt injection by DESIGN (CaMeL): capability-based control-flow integrity for agents"
+    by: "Debenedetti et al. (Google DeepMind / ETH)"
+    url: https://arxiv.org/abs/2503.18813
+    year: 2025
+    evidence: verified
+    verified_at: "2026-08-03"
+    summary: >-
+      Rather than trying to detect malicious instructions, CaMeL separates the control plane
+      (a plan produced from trusted input) from the data plane (untrusted content), and enforces
+      capability constraints on what the plan may do — borrowing control-flow integrity and
+      capability security from systems security.
+    why_it_matters: >-
+      The strongest argument that agent security is an ARCHITECTURE problem, not a classifier
+      problem. It is the intellectual justification for secure-anything's whole approach:
+      policy as data, gates as exit codes, detection as merely one input.
+    covers: [LLM01, ASI01, ASI02]
+    triggers: ["camel", "defeat prompt injection by design", "control flow integrity", "capability security", "why detection is not enough", "why is detection not enough", "detection is not enough"]
+
+  - id: no-evidence-means-no
+    kind: concept
+    title: "No evidence means no (the unmeasured item can never pass a blocking gate)"
+    by: "secure-anything (house discipline, from anyagent's BRACE work)"
+    url: docs/REPO_PLAYBOOK.md
+    year: 2026
+    evidence: verified
+    verified_at: "2026-08-03"
+    summary: >-
+      An item a gate could not measure is reported as `not measured` and excluded from the score
+      — never silently converted into a pass. A blocking gate cannot go green on unmeasured items.
+    why_it_matters: "The difference between a security report and a security theatre report."
+    covers: []
+    triggers: ["not measured", "unmeasured", "can we pass this anyway", "no evidence"]
+
+  # ═══════════════════════════ papers (all arXiv-API verified 2026-08-03) ════════════════════
+  - id: paper-camel
+    kind: paper
+    title: "Defeating Prompt Injections by Design"
+    by: "Edoardo Debenedetti + 9 co-authors"
+    url: https://arxiv.org/abs/2503.18813
+    year: 2025
+    published: "2025-03-24"
+    evidence: verified
+    verified_at: "2026-08-03"
+    summary: "The CaMeL system: a protective layer that extracts control and data flow from the trusted query so untrusted content can never alter the program's control flow."
+    covers: [LLM01, ASI01]
+    triggers: ["camel paper", "prompt injection by design"]
+
+  - id: paper-design-patterns
+    kind: paper
+    title: "Design Patterns for Securing LLM Agents against Prompt Injections"
+    by: "Luca Beurer-Kellner + 13 co-authors"
+    url: https://arxiv.org/abs/2506.08837
+    year: 2025
+    published: "2025-06-10"
+    evidence: verified
+    verified_at: "2026-08-03"
+    summary: >-
+      Six design patterns (including CaMeL's) that trade agent generality for injection
+      resistance — action-selector, plan-then-execute, LLM map-reduce, dual LLM, code-then-execute,
+      context-minimisation.
+    why_it_matters: "The most directly actionable paper in this list: each pattern is a design a gate can check for."
+    covers: [LLM01, LLM06, ASI01, ASI02]
+    triggers: ["design patterns", "dual llm", "plan then execute", "how should i architect my agent"]
+
+  - id: paper-agentdojo
+    kind: paper
+    title: "AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents"
+    by: "Edoardo Debenedetti + 5 co-authors"
+    url: https://arxiv.org/abs/2406.13352
+    year: 2024
+    published: "2024-06-19"
+    evidence: verified
+    verified_at: "2026-08-03"
+    summary: "A dynamic benchmark of realistic tool-use tasks plus security test cases, designed so new attacks and defences can be added rather than frozen."
+    covers: [LLM01, ASI01, ASI02]
+    triggers: ["agentdojo paper", "how do i measure injection resistance"]
+
+  - id: paper-injecagent
+    kind: paper
+    title: "InjecAgent: Benchmarking Indirect Prompt Injections in Tool-Integrated Large Language Model Agents"
+    by: "Qiusi Zhan + 3 co-authors"
+    url: https://arxiv.org/abs/2403.02691
+    year: 2024
+    published: "2024-03-05"
+    evidence: verified
+    verified_at: "2026-08-03"
+    summary: "The first systematic benchmark for indirect prompt injection against tool-using agents."
+    covers: [LLM01, ASI02]
+    triggers: ["injecagent paper", "indirect prompt injection benchmark"]
+
+  - id: paper-agentic-security-survey
+    kind: paper
+    title: "A Survey on Agentic Security: Applications, Threats and Defenses"
+    by: "Asif Shahriar + 4 co-authors"
+    url: https://arxiv.org/abs/2510.06445
+    year: 2025
+    published: "2025-10-07"
+    evidence: verified
+    verified_at: "2026-08-03"
+    summary: "Field-wide survey of agentic security — the best single entry point for someone new to the area."
+    covers: []
+    triggers: ["survey", "where do i start", "overview of agent security", "literature review"]
+
+  - id: paper-aisi-grayswan-competition
+    kind: paper
+    title: "How Vulnerable Are AI Agents to Indirect Prompt Injections? Insights from a Large-Scale Public Competition"
+    by: "Mateusz Dziemian + 30 co-authors (UK AISI × Gray Swan)"
+    url: https://arxiv.org/abs/2603.15714
+    year: 2026
+    published: "2026-03-16"
+    evidence: verified
+    verified_at: "2026-08-03"
+    summary: >-
+      Findings from the largest public agent red-teaming competition to date — empirical evidence
+      on which attacks transfer across agents and how quickly defended agents fall.
+    why_it_matters: >-
+      The strongest available empirical base rate for 'how likely is my agent to be broken'.
+      Cite this rather than a vendor's catch-rate slide.
+    covers: [LLM01, ASI01]
+    triggers: ["how vulnerable are agents", "competition results", "base rate", "grayswan aisi"]
+
+  - id: paper-strongreject
+    kind: paper
+    title: "A StrongREJECT for Empty Jailbreaks"
+    by: "Alexandra Souly + 10 co-authors"
+    url: https://arxiv.org/abs/2402.10260
+    year: 2024
+    published: "2024-02-15"
+    evidence: verified
+    verified_at: "2026-08-03"
+    summary: >-
+      Shows that many reported jailbreak 'successes' are empty — the model complied but produced
+      useless output — and provides strict scoring that does not inflate.
+    why_it_matters: >-
+      Binding on this repo: AgentGate's benchmarking rules already require StrongREJECT-style
+      strict scoring so a 'technically caught' never inflates a catch-rate claim.
+    covers: [LLM09]
+    triggers: ["strongreject", "strict scoring", "is this catch rate real", "inflated benchmark"]
+
+  - id: paper-error-bars
+    kind: paper
+    title: "Adding Error Bars to Evals: A Statistical Approach to Language Model Evaluations"
+    by: "Evan Miller (Anthropic)"
+    url: https://arxiv.org/abs/2411.00640
+    year: 2024
+    published: "2024-11-01"
+    evidence: verified
+    verified_at: "2026-08-03"
+    summary: "How to put confidence intervals on eval results so a delta between two systems means something."
+    why_it_matters: "Binding on this repo: every catch-rate delta we publish carries error bars."
+    covers: [LLM09]
+    triggers: ["error bars", "is this difference significant", "eval statistics"]
+
+  # ═══════════════════════════ books ═════════════════════════════════════════════════════════
+  - id: book-developers-playbook-llm-security
+    kind: book
+    title: "The Developer's Playbook for Large Language Model Security: Building Secure AI Applications"
+    by: "Steve Wilson"
+    url: https://www.oreilly.com/library/view/the-developers-playbook/9781098162191/
+    publisher: "O'Reilly Media"
+    isbn: "9781098162207"
+    year: 2024
+    published: "2024-10-29"
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    summary: >-
+      Practitioner's guide to LLM application security from the co-creator of the OWASP Top 10
+      for LLMs. The book-length companion to the control list in data/controls.yml.
+    covers: [LLM01, LLM02, LLM03, LLM05, LLM06]
+    triggers: ["what should i read", "llm security book", "security book", "steve wilson"]
+
+  - id: book-adversarial-ai
+    kind: book
+    title: "Adversarial AI Attacks, Mitigations, and Defense Strategies"
+    by: "John Sotiropoulos"
+    url: https://www.packtpub.com/en-us/product/adversarial-ai-attacks-mitigations-and-defense-strategies-9781835087985
+    publisher: "Packt"
+    isbn: "9781835087985"
+    year: 2024
+    published: "2024-07-26"
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    summary: >-
+      602-page cybersecurity-professional's guide spanning predictive and generative AI attacks,
+      threat modelling, and MLSecOps, mapped to OWASP / MITRE / NIST.
+    why_it_matters: "The most thorough book-length treatment of mapping AI attacks onto existing security standards — which is exactly M3's job."
+    covers: [LLM03, LLM04, ASI04]
+    triggers: ["adversarial ai book", "mlsecops", "threat modeling book", "sotiropoulos"]
+
+  # ═══════════════════════════ blogs (living sources, re-checked on cadence) ═════════════════
+  - id: blog-simon-willison
+    kind: blog
+    title: "Simon Willison's Weblog"
+    by: "Simon Willison"
+    url: https://simonwillison.net/
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    summary: >-
+      The de-facto public record of prompt-injection thinking since 2022; originated the
+      'lethal trifecta' and 'dual LLM' framings and tracks each new class of attack as it appears.
+    why_it_matters: "Highest signal-to-noise source for whether a proposed defence is actually new."
+    covers: [LLM01, ASI01]
+    triggers: ["simon willison", "prompt injection blog", "latest thinking"]
+
+  - id: blog-embrace-the-red
+    kind: blog
+    title: "Embrace The Red"
+    by: "Johann Rehberger (wunderwuzzi)"
+    url: https://embracethered.com/blog/
+    evidence: verified
+    verified_at: "2026-08-03"
+    summary: >-
+      Offensive AI security research with working proofs of concept — indirect prompt injection
+      to data exfiltration, computer-use agent hijacking (ZombAI), sandbox escapes. Recent posts
+      read on 2026-08-03 include 'Autonomous AI Intrusions Are Here: Lessons from the Hugging
+      Face Compromise' (2026-07-19) and 'From Indirect Prompt Injection to DNS Exfiltration in
+      macOS Terminal' (2026-07-16).
+    why_it_matters: >-
+      Where new agent attack classes tend to appear FIRST, with a runnable PoC rather than a
+      taxonomy. Our red-team fixture backlog should track it.
+    covers: [LLM01, LLM02, ASI01, ASI02, ASI05]
+    triggers: ["embrace the red", "johann rehberger", "wunderwuzzi", "new attack", "zombai", "proof of concept"]
+
+  # ═══════════════════════════ people (canonical FOR something specific) ═════════════════════
+  - id: person-simon-willison
+    kind: person
+    title: "Simon Willison"
+    canonical_for: "Naming and popularising prompt-injection failure modes; the lethal trifecta; the dual-LLM pattern"
+    url: https://simonwillison.net/
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    covers: [LLM01]
+    triggers: ["simon willison"]
+
+  - id: person-johann-rehberger
+    kind: person
+    title: "Johann Rehberger (wunderwuzzi)"
+    canonical_for: "Practical, PoC-first offensive research against deployed AI assistants and computer-use agents"
+    url: https://embracethered.com/blog/
+    evidence: verified
+    verified_at: "2026-08-03"
+    covers: [LLM01, LLM02, ASI05]
+    triggers: ["johann rehberger", "wunderwuzzi"]
+
+  - id: person-nicholas-carlini
+    kind: person
+    title: "Nicholas Carlini"
+    canonical_for: "Adversarial machine learning; showing that proposed defences usually break under adaptive attack"
+    url: https://nicholas.carlini.com/
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    affiliation: "Anthropic (previously Google DeepMind)"
+    unconfirmed: "Affiliation corroborated via Wikipedia and conference listings in this session; not confirmed at a primary employer page."
+    covers: []
+    triggers: ["carlini", "adaptive attack", "will this defence hold"]
+
+  - id: person-florian-tramer
+    kind: person
+    title: "Florian Tramèr"
+    canonical_for: "ML security and privacy research; co-author on adaptive attacks that bypass jailbreak and injection defences"
+    url: https://www.floriantramer.com/
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    affiliation: "ETH Zurich"
+    covers: []
+    triggers: ["tramer", "eth security", "ml security research"]
+
+  - id: person-edoardo-debenedetti
+    kind: person
+    title: "Edoardo Debenedetti"
+    canonical_for: "Lead author of both AgentDojo (the benchmark) and CaMeL (the design-level defence)"
+    url: https://arxiv.org/a/debenedetti_e_1
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    covers: [LLM01, ASI01]
+    triggers: ["debenedetti", "agentdojo author", "camel author"]
+
+  - id: person-steve-wilson
+    kind: person
+    title: "Steve Wilson"
+    canonical_for: "Leading the OWASP Top 10 for LLM Applications; author of the O'Reilly LLM security playbook"
+    url: https://www.oreilly.com/library/view/the-developers-playbook/9781098162191/
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    covers: [LLM01]
+    triggers: ["steve wilson", "owasp llm lead"]
+
+  # ═══════════════════════════ labs ══════════════════════════════════════════════════════════
+  - id: lab-uk-aisi
+    kind: lab
+    title: "UK AI Security Institute (AISI)"
+    canonical_for: "Independent pre-deployment evaluation of frontier models; the Control Red Team that stress-tests the safety MONITORS themselves"
+    url: https://www.aisi.gov.uk/
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    summary: >-
+      Government institute (est. 2023) running independent frontier-model evaluations. Its Control
+      Red Team attacks the monitors guarding agents — and reported finding vulnerabilities in
+      every internal safety monitor version it tested.
+    why_it_matters: >-
+      Directly relevant to us: secure-anything IS a monitor. The Control Red Team's premise —
+      that monitors need their own adversary — is the argument for AgentGate's Phase 1.5
+      (protect the gate from the code it judges).
+    covers: [ASI10]
+    triggers: ["aisi", "uk ai security institute", "who tests the monitors", "control red team"]
+
+  - id: lab-anthropic-frontier-red-team
+    kind: lab
+    title: "Anthropic Frontier Red Team"
+    canonical_for: "Stress-testing frontier model capabilities to produce strategic warning about emerging risk"
+    url: https://www.anthropic.com/research/team/frontier-red-team
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    covers: []
+    triggers: ["frontier red team", "anthropic red team", "strategic warning"]
+
+  - id: lab-eth-spy
+    kind: lab
+    title: "ETH Zurich SPY Lab"
+    canonical_for: "AgentDojo and much of the rigorous academic work on agent injection attacks and defences"
+    url: https://spylab.ai/
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    covers: [LLM01, ASI01]
+    triggers: ["spy lab", "eth zurich", "academic agent security"]
+
+  - id: lab-gray-swan
+    kind: lab
+    title: "Gray Swan AI"
+    canonical_for: "Large-scale public agent red-teaming arenas and the resulting attack datasets"
+    url: https://www.grayswan.ai/research
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    summary: "Ran the agent red-teaming arena reported (with UK AISI) in arXiv 2603.15714 — see paper-aisi-grayswan-competition for the peer-reviewed numbers."
+    covers: [LLM01, ASI01]
+    triggers: ["gray swan", "red team arena", "attack dataset"]
+
+  - id: lab-nist-caisi
+    kind: lab
+    title: "NIST CAISI (Center for AI Standards and Innovation)"
+    canonical_for: "US standards-side AI security work; co-published the large-scale agent red-teaming analysis; running the AI Agent Standards Initiative"
+    url: https://www.nist.gov/
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    covers: []
+    triggers: ["nist", "caisi", "ai agent standards initiative", "us standards"]
+
+  # ═══════════════════════════ standards (beyond controls.yml) ═══════════════════════════════
+  - id: std-mitre-atlas
+    kind: standard
+    title: "MITRE ATLAS"
+    canonical_for: "Adversarial tactics and techniques taxonomy for AI systems (the ATT&CK analogue for ML/AI)"
+    url: https://atlas.mitre.org/
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    summary: "Technique IDs for AI-specific adversary behaviour. Candidate third framework for the north-star denominator at M3."
+    covers: []
+    triggers: ["atlas", "mitre atlas", "technique id", "adversary taxonomy"]
+
+  - id: std-nist-ai-rmf
+    kind: standard
+    title: "NIST AI Risk Management Framework (AI RMF 1.0)"
+    canonical_for: "Voluntary US risk-management structure — Govern / Map / Measure / Manage"
+    url: https://www.nist.gov/itl/ai-risk-management-framework
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    covers: []
+    triggers: ["nist ai rmf", "risk management framework", "govern map measure manage"]
+
+  - id: std-iso-42001
+    kind: standard
+    title: "ISO/IEC 42001 — AI Management System"
+    canonical_for: "Certifiable management-system standard for AI (the ISO 27001 analogue for AI governance)"
+    url: https://www.iso.org/standard/81230.html
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    why_it_matters: "The certification enterprises will be asked for. A signed, replayable ledger is the kind of evidence its audits want."
+    covers: []
+    triggers: ["iso 42001", "ai management system", "certification", "auditor wants evidence"]
+
+  - id: std-eu-ai-act-art12
+    kind: standard
+    title: "EU AI Act — Article 12 (record-keeping / automatic logging)"
+    canonical_for: "The legal obligation that high-risk AI systems automatically record events over their lifetime"
+    url: https://artificialintelligenceact.eu/article/12/
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    summary: >-
+      High-risk AI systems must technically allow automatic recording of events (logs) over
+      their lifetime. Secondary sources in this session put full applicability of the high-risk
+      track at 2026-08-02.
+    why_it_matters: >-
+      The clearest regulatory tailwind for an audit-of-record product — a hash-chained, signed
+      ledger is a direct answer to an Article 12 question.
+    unconfirmed: "The 2026-08-02 applicability date is from secondary coverage; confirm against the Official Journal text before using it in any customer-facing claim."
+    covers: []
+    triggers: ["eu ai act", "article 12", "record keeping", "compliance deadline", "logging obligation"]
+
+  # ═══════════════════════════ skill libraries (index-only, quarantine by default) ═══════════
+  - id: skills-supply-chain-risk
+    kind: skill-library
+    title: "Agent skill libraries are an unaudited supply chain"
+    by: "secure-anything (synthesis of 2026 ecosystem studies)"
+    url: https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/
+    evidence: claimed
+    verified_at: "2026-08-03"
+    summary: >-
+      Secondary reporting in this session cited a 2026 study of ~31k agent skills finding 26.1%
+      contained security vulnerabilities, and a separate audit finding prompt injection in 36% of
+      tested skills. Skills can ship runnable scripts.
+    why_it_matters: >-
+      This is ASI04 (agentic supply chain) arriving in our own tooling. House rule, already in
+      force in anyagent: index skills only, load a body on trigger match, QUARANTINE any skill
+      folder shipping a runnable file until a human approves, and drift-check every load against
+      a pinned hash.
+    unconfirmed: >-
+      DELIBERATELY TIERED `claimed`: the 26.1% and 36% figures come from secondary summaries in
+      this session; neither primary study was read. Do NOT cite these numbers externally. The
+      house rule stands on its own reasoning regardless of the exact percentage.
+    covers: [LLM03, ASI04]
+    triggers: ["skill supply chain", "agent skill risk", "quarantine"]
+
+  - id: skills-audit-coverage-gap
+    kind: skill-library
+    title: "The agent-skill supply chain audits a rounding error of what it distributes"
+    by: "secure-anything (read at skills.sh, 2026-08-03)"
+    url: https://www.skills.sh/audits
+    year: 2026
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    summary: >-
+      skills.sh (Vercel; installer `vercel-labs/skills`, MIT, 27,919 stars, read from the GitHub
+      API on 2026-08-03) is the de-facto distribution channel for agent skills across 20+ agents,
+      installable with one command. Its /audits page, read the same day, lists security results
+      for **50 skills** from three vendors (Gen Agent Trust Hub, Socket, Snyk) — and publishes
+      **no methodology**: no statement of what is checked, no threat categories, no criteria.
+    why_it_matters: >-
+      This is ASI04 (agentic supply chain) in its most concrete form, and it is the exact shape of
+      problem this repo exists for. A skill is procedural instruction executing inside the agent's
+      trust boundary; the installer is one command; the audit covers a tiny, self-selected slice
+      and does not say what "Safe" means. An audit whose methodology is unpublished cannot be
+      independently re-run, so under our own ladder it is a `claimed` result, not a `verified` one —
+      exactly the case for treating an unaudited skill as NOT MEASURED rather than as safe.
+      House rule stands: index skills, load a body only on a trigger match, QUARANTINE any skill
+      folder shipping a runnable file until a human approves, and drift-check every load against a
+      pinned hash.
+    covers: [LLM03, ASI04]
+    unconfirmed: >-
+      The site's self-reported install totals (~1.1M) are a vendor metric about its own platform and
+      are NOT restated here as fact. The "50 skills audited" figure is what the /audits index showed
+      on 2026-08-03 and may change. Whether the three vendors' checks are adequate is NOT assessed —
+      we could not read a methodology, which is precisely the finding.
+    triggers: ["is this skill safe", "skills.sh audits", "are agent skills audited", "skill security", "should i install this skill"]
+
+  # ═══════════════════════════ disputed — kept on purpose ════════════════════════════════════
+  - id: disputed-brace-framework
+    kind: standard
+    title: "BRACE framework (agent security controls)"
+    canonical_for: "— (unverifiable)"
+    url: https://braceframework.org
+    evidence: disputed
+    verified_at: "2026-07-25"
+    summary: >-
+      A control framework referenced in earlier internal work (anyagent ships an `anyagent brace`
+      command built against it), but braceframework.org returned HTTP 403 when checked on
+      2026-07-25 and the framework could not be verified at a primary source.
+    why_it_matters: >-
+      Kept as a card, not deleted, because the correction is the value: DO NOT use BRACE in any
+      external messaging. Use OWASP LLM / OWASP Agentic / MITRE ATLAS / NIST AI RMF instead. This
+      card is also the honest note that a sibling repo has a command built on a shaky foundation.
+    covers: []
+    triggers: ["brace", "brace framework"]
+
+  - id: claimed-codex-security-catch-rate
+    kind: paper
+    title: "Codex Security reported catch rate (70% on 23 seeded/historical vulnerabilities)"
+    by: "OpenAI, via secondary reporting"
+    url: https://github.com/openai/codex-security
+    year: 2026
+    evidence: claimed
+    verified_at: "2026-08-03"
+    summary: >-
+      Secondary coverage in this session reported that Codex Security scanned 1.2M commits,
+      surfaced 792 critical and 10,561 high-severity issues in open source, and caught 16 of 23
+      seeded/historical vulnerabilities across three repositories (~70%).
+    why_it_matters: >-
+      A vendor-reported figure about its own product, relayed by press — exactly the class of
+      number this repo refuses to launder into a fact. Recorded so that when we DO run
+      codex-security through our own gate (M2), we can compare its measured behaviour here
+      against what was claimed.
+    unconfirmed: "Not independently verified; no error bars; the seeded-vulnerability set is not public. Never cite as a benchmark result."
+    covers: []
+    triggers: ["codex security catch rate", "how good is codex security", "70%"]

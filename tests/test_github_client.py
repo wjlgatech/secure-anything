@@ -8,9 +8,16 @@ from __future__ import annotations
 import httpx
 import pytest
 
-from agentgate.config import Settings
-from agentgate.domain import Actor, ActorKind, ActionType, Decision, PullRequest, RiskTier
-from agentgate.github_client import GitHubClient
+from secure_anything.organs.agentgate.config import Settings
+from secure_anything.organs.agentgate.domain import (
+    ActionType,
+    Actor,
+    ActorKind,
+    Decision,
+    PullRequest,
+    RiskTier,
+)
+from secure_anything.organs.agentgate.github_client import GitHubClient
 
 
 def _settings() -> Settings:
@@ -31,8 +38,8 @@ def _client(handler, sent: list):
 
 
 def _pr(**kw) -> PullRequest:
-    base = dict(repo="octo/repo", number=7, actor=Actor(login="a", kind=ActorKind.HUMAN),
-                head_sha="deadbeef")
+    base = {"repo": "octo/repo", "number": 7,
+            "actor": Actor(login="a", kind=ActorKind.HUMAN), "head_sha": "deadbeef"}
     base.update(kw)
     return PullRequest(**base)
 

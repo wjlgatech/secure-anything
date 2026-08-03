@@ -27,4 +27,4 @@ on `delivery_id`; "no evidence ⇒ escalate".
 `202 queued` with correct actor kind.
 
 ## Shipped
-Commit `c6e725c`. Modules under `src/agentgate/`; tests under `tests/`.
+Commit `c6e725c`. Modules under `src/secure_anything/organs/agentgate/`; tests under `tests/`.
