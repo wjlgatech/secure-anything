@@ -12,4 +12,4 @@ RUN useradd --create-home --uid 10001 appuser
 USER appuser
 
 EXPOSE 8099
-CMD ["uvicorn", "agentgate.main:app", "--host", "0.0.0.0", "--port", "8099"]
+CMD ["uvicorn", "secure_anything.organs.agentgate.main:app", "--host", "0.0.0.0", "--port", "8099"]

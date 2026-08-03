@@ -1,7 +1,7 @@
 [project]
-name = "agentgate"
-version = "0.1.0"
-description = "The trust & accountability gate for human + AI-agent code changes. First wedge: a PR firewall for coding agents."
+name = "secure-anything"
+version = "0.2.0"
+description = "The composition layer for agent security: a lean core (registry, router, gate seam, signed ledger) over a rich ecosystem of capabilities and knowledge. AgentGate ships as its first organ."
 requires-python = ">=3.11"
 license = { text = "Proprietary — All Rights Reserved" }
 dependencies = [
@@ -36,4 +36,4 @@ addopts = "-q"
 
 [tool.ruff]
 line-length = 100
-src = ["src", "tests"]
+src = ["src", "tests", "scripts"]

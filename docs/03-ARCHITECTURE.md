@@ -29,7 +29,7 @@ checks, LLM) runs in a separate worker. Under a burst of 50 agents opening PRs a
 the API never blocks; workers drain the queue. Dev uses an in-process queue; prod uses
 Redis so API and workers are separate processes/containers (see `docker-compose.yml`).
 
-## Modules (`src/agentgate/`)
+## Modules (`src/secure_anything/organs/agentgate/`)
 
 | Module | Responsibility |
 |---|---|

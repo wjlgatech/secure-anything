@@ -3,14 +3,15 @@ from __future__ import annotations
 import pytest
 from sqlalchemy.orm import sessionmaker
 
-from agentgate.db import init_db, make_engine
-from agentgate.domain import Actor, ActorKind, ChangeSet, FileChange, PullRequest
-from agentgate.policy.engine import load_policy
+from secure_anything.organs.agentgate.db import init_db, make_engine
+from secure_anything.organs.agentgate.domain import Actor, ActorKind, ChangeSet, FileChange, PullRequest
+from secure_anything.organs.agentgate.policy import DEFAULT_POLICY_PATH
+from secure_anything.organs.agentgate.policy.engine import load_policy
 
 
 @pytest.fixture
 def policy():
-    return load_policy("src/agentgate/policy/default_policy.yaml")
+    return load_policy(DEFAULT_POLICY_PATH)
 
 
 @pytest.fixture

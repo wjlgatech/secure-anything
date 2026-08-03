@@ -1,7 +1,7 @@
 import hashlib
 import hmac
 
-from agentgate.webhooks.github import parse_pull_request_event, verify_signature
+from secure_anything.organs.agentgate.webhooks.github import parse_pull_request_event, verify_signature
 
 SECRET = "s3cr3t-webhook-key"
 

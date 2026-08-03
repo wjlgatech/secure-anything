@@ -8,9 +8,9 @@ from __future__ import annotations
 import httpx
 import pytest
 
-from agentgate.config import Settings
-from agentgate.domain import Actor, ActorKind, ActionType, Decision, PullRequest, RiskTier
-from agentgate.github_client import GitHubClient
+from secure_anything.organs.agentgate.config import Settings
+from secure_anything.organs.agentgate.domain import Actor, ActorKind, ActionType, Decision, PullRequest, RiskTier
+from secure_anything.organs.agentgate.github_client import GitHubClient
 
 
 def _settings() -> Settings:

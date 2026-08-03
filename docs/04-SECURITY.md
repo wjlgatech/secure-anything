@@ -19,7 +19,7 @@ PR author (human *or* agent) may be adversarial.
 |---|---|
 | Forged/replayed webhook | HMAC verify + idempotency on `delivery_id` |
 | Secret smuggled in a diff | `secret_scan` hard-block (request changes), not escalate |
-| Agent edits its own guardrails | `src/agentgate/policy/**`, `.github/workflows/**`, `**/auth/**` are protected paths → escalate to human |
+| Agent edits its own guardrails | `src/secure_anything/organs/agentgate/policy/**`, `.github/workflows/**`, `**/auth/**` are protected paths → escalate to human |
 | Prompt injection via diff → coerce approval | Policy is data; LLM output is advisory and cannot raise privileges; risky + no LLM evidence ⇒ escalate |
 | Tampering with the audit history | Hash-chained ledger; `audit/verify` re-walks and detects any edit/insert/delete |
 | Over-broad agent autonomy | Actor-aware policy: agents auto-merge only low-risk; medium+ ⇒ human |

@@ -2,13 +2,13 @@
 so no `agent-audit` binary or subprocess is ever touched here."""
 from __future__ import annotations
 
-from agentgate.checks.agent_audit import (
+from secure_anything.organs.agentgate.checks.agent_audit import (
     AgentAuditCheck,
     AgentAuditFinding,
     SubprocessAgentAuditScanner,
     parse_sarif,
 )
-from agentgate.domain import RiskTier
+from secure_anything.organs.agentgate.domain import RiskTier
 
 
 class _FakeScanner:

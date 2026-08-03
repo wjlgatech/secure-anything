@@ -1,7 +1,7 @@
 """Parsing the `/agentgate approve` comment command out of an issue_comment event."""
 from __future__ import annotations
 
-from agentgate.webhooks.github import parse_issue_comment_event
+from secure_anything.organs.agentgate.webhooks.github import parse_issue_comment_event
 
 
 def _event(body: str, *, action: str = "created", is_pr: bool = True) -> dict:
