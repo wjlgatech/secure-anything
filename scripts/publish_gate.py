@@ -59,6 +59,7 @@ PUBLIC_PATHS = [
 ALWAYS_PRIVATE = [
     "src/secure_anything/organs/*", "docs/organs/*", "docs/adr/*", "docs/specs/*",
     "docs/0*.md", "GOAL.md", "scripts/publish_gate.py", "scripts/publish_public.py",
+    "scripts/public_drift.py",
     "scripts/demo_bypass_caught.py", "docs/*PLAYBOOK*.md", "CLAUDE.md",
     ".env*", "Dockerfile", "docker-compose.yml",
 ]
@@ -68,7 +69,7 @@ SENSITIVE_TERMS = [
     r"design partner", r"buyer hypothes", r"who holds the budget", r"go-to-market",
     r"\bGTM\b", r"pricing", r"\bARR\b", r"revenue", r"Accenture", r"pilot program",
     r"competitive landscape", r"demand signal", r"switching cost", r"our moat",
-    r"secure-anything-private", r"Braintrust ~\$", r"90-day pilot",
+    r"Braintrust ~\$", r"90-day pilot", r"secure-anything-lab",
 ]
 # Phrases that legitimately contain a sensitive-looking word in a non-strategy sense.
 # An exception only excuses a hit whose span falls INSIDE the exception's own span.

@@ -381,6 +381,27 @@ capabilities:
     notes: "Rare and valuable: most benchmarks grade the model; this one grades the defence you bought."
     triggers: ["benchmark a detector", "pint", "how good is my injection filter"]
 
+  # ─────────────────────────── skill supply chain ────────────────────────────────────────────
+  - id: skills-registry
+    kind: external
+    role: skill-library
+    capability: "The open agent-skills registry and installer (`npx skills add <owner/repo>`) — the de-facto distribution channel for SKILL.md capabilities across 20+ agents"
+    url: https://github.com/vercel-labs/skills
+    status: candidate
+    license: MIT
+    license_confirmed: true
+    stars: 27919
+    upstream_pushed_at: "2026-07-31"
+    verified_at: "2026-08-03"
+    covers: [LLM03, ASI04]
+    notes: >-
+      Registry front-end at skills.sh. Indexed as INFRASTRUCTURE WE MUST GATE, not as a defence:
+      a one-command installer for third-party procedural instructions is a supply chain, and the
+      skills it installs execute inside an agent's trust boundary. skills.sh publishes an /audits
+      page (Gen Agent Trust Hub, Socket, Snyk) — see the `skills-audit-coverage-gap` card for what
+      that does and does not establish. Highest-value M2 chain candidate outside the code path.
+    triggers: ["install a skill", "npx skills", "skills.sh", "skill registry", "agent skills", "where do skills come from"]
+
   # ─────────────────────────── policy & threat modelling ─────────────────────────────────────
   - id: opa
     kind: external

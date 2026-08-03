@@ -1,5 +1,5 @@
 .PHONY: install test lint fmt check build build-check northstar route \
-        manifest registry ainative publish-gate public run worker docker-up
+        manifest registry ainative publish-gate public public-drift run worker docker-up
 
 install:
 	python -m pip install -e ".[dev]"
@@ -7,7 +7,7 @@ install:
 # THE canonical gate (what CI and `anyagent goal` discover).
 # Offline and deterministic: no network, no API key. Order is deliberate — cheap
 # structural gates fail fast before the test suite runs.
-check: lint manifest registry build-check publish-gate ainative test
+check: lint manifest registry build-check publish-gate public-drift ainative test
 
 lint:
 	ruff check src tests scripts
@@ -48,6 +48,9 @@ route:               ## drive the router: make route Q="scan my repo"
 # --- the public mirror (IP boundary) -----------------------------------------
 publish-gate:        ## would exporting leak anything? path allowlist + content denylist
 	python3 scripts/publish_gate.py
+
+public-drift:        ## has the published tree fallen behind what we would export?
+	python3 scripts/public_drift.py
 
 public:              ## export the public subset and prove it passes its own gate
 	python3 scripts/publish_public.py --force --verify

@@ -27,7 +27,8 @@ ROLE_ORDER = [
     ("gate", "Gate (ours)"), ("scanner", "Scanners"), ("guardrail", "Guardrails (runtime)"),
     ("redteam", "Red team"), ("benchmark", "Benchmarks"), ("policy", "Policy engines"),
     ("threat-model", "Threat modelling"), ("provenance", "Provenance & supply chain"),
-    ("standard-impl", "Protocols"), ("engine", "Engines"),
+    ("skill-library", "Skill supply chain"), ("standard-impl", "Protocols"),
+    ("engine", "Engines"),
 ]
 CARD_ORDER = [
     ("concept", "Concepts"), ("paper", "Papers"), ("book", "Books"), ("blog", "Blogs"),

@@ -22,8 +22,8 @@
 <!-- BEGIN GENERATED: northstar -->
 **Verified Control Coverage (VCC): 0/20 = 0.0%**  ← the north star
 
-- Capabilities: 0 🟢 integrated · 2 🟡 digested · 29 ⚪ candidate
-- Knowledge cards: 3 claimed · 18 corroborated · 1 disputed · 12 verified
+- Capabilities: 0 🟢 integrated · 2 🟡 digested · 30 ⚪ candidate
+- Knowledge cards: 3 claimed · 19 corroborated · 1 disputed · 12 verified
 - 17 control(s) are **mapped** to a capability but have no run receipt. Mapped is not measured — they count as zero.
 <!-- END GENERATED: northstar -->
 
@@ -150,6 +150,12 @@ awesome-list can claim 200 tools; this repo can only claim what left a receipt.
 | ⚪ | [`rekor`](https://github.com/sigstore/rekor) | Sigstore's append-only, publicly auditable transparency log — the external anchor a private hash-chain needs | Apache-2.0 | LLM03, ASI04 |
 | ⚪ | [`slsa`](https://github.com/slsa-framework/slsa) | Supply-chain Levels for Software Artifacts — the graded framework for build-integrity claims | NOASSERTION ⚠️ pointer-only | LLM03, ASI04 |
 
+**Skill supply chain**
+
+| | id | what it does | license | covers |
+|---|---|---|---|---|
+| ⚪ | [`skills-registry`](https://github.com/vercel-labs/skills) | The open agent-skills registry and installer (`npx skills add <owner/repo>`) — the de-facto distribution channel for SKILL.md capabilities across 20+ agents | MIT | LLM03, ASI04 |
+
 **Protocols**
 
 | | id | what it does | license | covers |
@@ -244,6 +250,7 @@ a correction retained beats a claim repeated.
 
 | evidence | what | by | why it matters |
 |---|---|---|---|
+| 🟢 corroborated | [The agent-skill supply chain audits a rounding error of what it distributes](https://www.skills.sh/audits) | secure-anything (read at skills.sh, 2026-08-03) | This is ASI04 (agentic supply chain) in its most concrete form, and it is the exact shape of problem this repo exists for. A skill is procedural instr… |
 | 🟠 claimed | [Agent skill libraries are an unaudited supply chain](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/) | secure-anything (synthesis of 2026 ecosystem studies) | This is ASI04 (agentic supply chain) arriving in our own tooling. House rule, already in force in anyagent: index skills only, load a body on trigger … |
 <!-- END GENERATED: knowledge -->
 

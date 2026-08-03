@@ -27,9 +27,9 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from publish_gate import main as gate_main  # noqa: E402
 from publish_gate import public_files  # noqa: E402
 
-DEFAULT_OUT = ROOT.parent / "secure-anything-public"
+DEFAULT_OUT = ROOT.parent / "secure-anything-core"
 OVERRIDES = ROOT / "publish" / "overrides"
-PRIVATE_ORGAN_URL = "https://github.com/wjlgatech/secure-anything-lab"
+PRIVATE_ORGAN_URL = "https://github.com/wjlgatech/secure-anything"
 
 
 def transform_registry(text: str) -> str:

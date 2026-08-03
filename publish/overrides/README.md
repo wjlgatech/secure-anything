@@ -6,7 +6,7 @@
 
 **Agent security is drowning in tools. This is the layer above them: one registry of what exists, one deterministic router from an intent to the right capability, one uniform seam that turns any of them into a comparable exit code, and one tamper-evident ledger of what was actually checked.**
 
-[![CI](https://github.com/wjlgatech/secure-anything/actions/workflows/ci.yml/badge.svg)](https://github.com/wjlgatech/secure-anything/actions/workflows/ci.yml)
+[![CI](https://github.com/wjlgatech/secure-anything-core/actions/workflows/ci.yml/badge.svg)](https://github.com/wjlgatech/secure-anything-core/actions/workflows/ci.yml)
 [![python](https://img.shields.io/badge/python-3.11%2B-blue)](pyproject.toml)
 [![core](https://img.shields.io/badge/core-%E2%89%A4600%20LOC%20(gated)-d97757)](tests/test_core_invariants.py)
 [![code](https://img.shields.io/badge/code-Apache--2.0-green)](LICENSE)

@@ -54,7 +54,7 @@ LEAKS = [
     "recruit 3-5 design partners",
     "the buyer hypotheses table",
     "this is an Accenture engagement",
-    "see wjlgatech/secure-anything-private for the organ",
+    "moved to wjlgatech/secure-anything-lab",
     "our go-to-market motion",
     "the 90-day pilot outcome",
 ]

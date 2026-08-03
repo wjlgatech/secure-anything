@@ -482,7 +482,39 @@ cards:
       this session; neither primary study was read. Do NOT cite these numbers externally. The
       house rule stands on its own reasoning regardless of the exact percentage.
     covers: [LLM03, ASI04]
-    triggers: ["is this skill safe", "skill supply chain", "install a skill", "agent skill risk", "quarantine"]
+    triggers: ["skill supply chain", "agent skill risk", "quarantine"]
+
+  - id: skills-audit-coverage-gap
+    kind: skill-library
+    title: "The agent-skill supply chain audits a rounding error of what it distributes"
+    by: "secure-anything (read at skills.sh, 2026-08-03)"
+    url: https://www.skills.sh/audits
+    year: 2026
+    evidence: corroborated
+    verified_at: "2026-08-03"
+    summary: >-
+      skills.sh (Vercel; installer `vercel-labs/skills`, MIT, 27,919 stars, read from the GitHub
+      API on 2026-08-03) is the de-facto distribution channel for agent skills across 20+ agents,
+      installable with one command. Its /audits page, read the same day, lists security results
+      for **50 skills** from three vendors (Gen Agent Trust Hub, Socket, Snyk) — and publishes
+      **no methodology**: no statement of what is checked, no threat categories, no criteria.
+    why_it_matters: >-
+      This is ASI04 (agentic supply chain) in its most concrete form, and it is the exact shape of
+      problem this repo exists for. A skill is procedural instruction executing inside the agent's
+      trust boundary; the installer is one command; the audit covers a tiny, self-selected slice
+      and does not say what "Safe" means. An audit whose methodology is unpublished cannot be
+      independently re-run, so under our own ladder it is a `claimed` result, not a `verified` one —
+      exactly the case for treating an unaudited skill as NOT MEASURED rather than as safe.
+      House rule stands: index skills, load a body only on a trigger match, QUARANTINE any skill
+      folder shipping a runnable file until a human approves, and drift-check every load against a
+      pinned hash.
+    covers: [LLM03, ASI04]
+    unconfirmed: >-
+      The site's self-reported install totals (~1.1M) are a vendor metric about its own platform and
+      are NOT restated here as fact. The "50 skills audited" figure is what the /audits index showed
+      on 2026-08-03 and may change. Whether the three vendors' checks are adequate is NOT assessed —
+      we could not read a methodology, which is precisely the finding.
+    triggers: ["is this skill safe", "skills.sh audits", "are agent skills audited", "skill security", "should i install this skill"]
 
   # ═══════════════════════════ disputed — kept on purpose ════════════════════════════════════
   - id: disputed-brace-framework

@@ -26,6 +26,7 @@ Expectation syntax:
 | `anchor the ledger so an auditor believes us` | capability:rekor | external transparency log |
 | `gate an mcp server` | capability?mcp-spec | the tool boundary ASI02/ASI07 describe |
 | `threat model my agent` | capability?agent-wiz | map the agent before gating it |
+| `npx skills` | capability?skills-registry | the skill supply chain is infrastructure to gate, not a defence |
 
 ## Should route — knowledge
 
@@ -46,7 +47,7 @@ Expectation syntax:
 | `llamafirewall` | warn:purplellama | license NOASSERTION ⇒ pointer only, never vendored or run in our CI |
 | `nemo guardrails` | warn:nemo-guardrails | same license wall |
 | `how good is codex security` | warn:claimed-codex-security-catch-rate | a vendor number must never be relayed as a fact |
-| `is this skill safe` | warn:skills-supply-chain-risk | the 26.1% / 36% figures are unverified secondary reporting |
+| `is this skill safe` | warn:skills-audit-coverage-gap | skills.sh audits 50 skills and publishes no methodology — say so, don't imply audited=safe |
 | `brace framework` | card:disputed-brace-framework | kept as a correction: unverifiable, do not use in messaging |
 
 ## Should bank a gap — no guessing
