@@ -4,9 +4,8 @@ from __future__ import annotations
 from sqlalchemy import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from ...store import init_db, make_engine  # noqa: F401  (core-owned, re-exported)
+from ...store import init_db, make_engine
 from .config import get_settings
-
 
 _engine: Engine | None = None
 _Session: sessionmaker[Session] | None = None

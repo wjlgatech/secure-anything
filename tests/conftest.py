@@ -4,7 +4,13 @@ import pytest
 from sqlalchemy.orm import sessionmaker
 
 from secure_anything.organs.agentgate.db import init_db, make_engine
-from secure_anything.organs.agentgate.domain import Actor, ActorKind, ChangeSet, FileChange, PullRequest
+from secure_anything.organs.agentgate.domain import (
+    Actor,
+    ActorKind,
+    ChangeSet,
+    FileChange,
+    PullRequest,
+)
 from secure_anything.organs.agentgate.policy import DEFAULT_POLICY_PATH
 from secure_anything.organs.agentgate.policy.engine import load_policy
 

@@ -35,7 +35,7 @@ class GateResult(BaseModel):
     def from_exit_code(
         cls, capability: str, exit_code: int, *, summary: str = "",
         evidence_ref: str = "", controls: list[str] | None = None,
-    ) -> "GateResult":
+    ) -> GateResult:
         return cls(
             capability=capability,
             verdict=Verdict.PASS if exit_code == 0 else Verdict.FAIL,

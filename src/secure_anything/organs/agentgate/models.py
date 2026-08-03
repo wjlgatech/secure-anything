@@ -10,8 +10,6 @@ from sqlalchemy.orm import Mapped, mapped_column
 from ...store import AuditEvent, Base, utcnow  # noqa: F401  (re-exported for the organ)
 
 
-
-
 class PRReview(Base):
     """The outcome record for one PR delivery (idempotent on delivery_id)."""
 

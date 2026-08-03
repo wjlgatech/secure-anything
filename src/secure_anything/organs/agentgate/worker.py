@@ -8,6 +8,7 @@ import time
 
 from sqlalchemy import select
 
+from .checks.registry import default_checks
 from .config import Settings, get_settings
 from .decision import decide
 from .domain import ChangeSet, Decision, PullRequest
@@ -17,7 +18,6 @@ from .policy.engine import load_policy
 from .policy.schema import Policy
 from .review import llm_review
 from .review.llm_review import LLMReview
-from .checks.registry import default_checks
 
 log = logging.getLogger("agentgate.worker")
 

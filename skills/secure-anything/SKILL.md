@@ -20,12 +20,12 @@ One front door for agent security. This skill **owns no domain logic** — it ro
 2. Run the deterministic router (never guess):
 
    ```bash
-   python3 -c "import sys; sys.path.insert(0,'src'); from secure_anything.router import route; \
-   r=route('<their intent>'); print([c.id for c in r.capabilities], [c.id for c in r.cards], r.warnings or r.gap)"
+   make route Q="<their intent>"
    ```
 
 3. Relay **every** warning verbatim. They are not decoration:
-   - a **licence wall** (`pointer-only`) means run it upstream — never vendor it, never run it in CI;
+   - a **licence wall** (`pointer-only`) means run it upstream — never vendor it,
+     never run it in CI;
    - an **evidence tier** below `verified` means do not restate the number as a fact.
 4. If the router banks a **gap**, say so plainly and record it. Do not substitute a near miss.
 

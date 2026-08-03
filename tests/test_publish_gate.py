@@ -14,7 +14,7 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from publish_gate import ALWAYS_PRIVATE, is_public, scan_content  # noqa: E402
+from publish_gate import ALWAYS_PRIVATE, is_public, scan_content
 
 MUST_STAY_PRIVATE = [
     "docs/01-MARKET.md",

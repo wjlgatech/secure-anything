@@ -29,7 +29,10 @@ def check() -> list[str]:
         if c.status.rank >= Status.DIGESTED.rank:
             digest = ROOT / "docs" / "satellites" / f"{c.id}.md"
             if not digest.exists():
-                bad.append(f"{where}: status={c.status.value} but {digest.relative_to(ROOT)} is missing")
+                bad.append(
+                    f"{where}: status={c.status.value} but "
+                    f"{digest.relative_to(ROOT)} is missing"
+                )
             if c.kind == "external" and not c.pinned_sha:
                 bad.append(f"{where}: external capability at {c.status.value} without a pinned_sha")
 

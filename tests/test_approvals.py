@@ -1,8 +1,8 @@
 """The human-approval loop: authorization + audit, with a recording fake GitHub."""
 from __future__ import annotations
 
-from secure_anything.organs.agentgate.approvals import can_approve, process_approval
 from secure_anything.ledger import AuditLedger
+from secure_anything.organs.agentgate.approvals import can_approve, process_approval
 from secure_anything.organs.agentgate.config import Settings
 from secure_anything.organs.agentgate.domain import ApprovalCommand
 from secure_anything.store import AuditEvent

@@ -29,7 +29,8 @@ def _core_files() -> list[Path]:
 def _script_ok(name: str, *args: str) -> tuple[bool, str]:
     r = subprocess.run([sys.executable, str(ROOT / "scripts" / name), *args],
                        capture_output=True, text=True, cwd=ROOT)
-    return r.returncode == 0, (r.stdout + r.stderr).strip().splitlines()[-1] if (r.stdout or r.stderr) else ""
+    out = (r.stdout + r.stderr).strip()
+    return r.returncode == 0, out.splitlines()[-1] if out else ""
 
 
 # --- one function per principle id -------------------------------------------------------
@@ -80,7 +81,8 @@ def status_ladder_enforced() -> tuple[bool, str]:
 def aggregate_exit_codes_not_claims() -> tuple[bool, str]:
     from secure_anything.gate import GateResult
     r = GateResult.from_exit_code("x", 3)
-    return (r.exit_code == 3 and hasattr(r, "evidence_ref")), "GateResult carries exit_code + evidence_ref"
+    ok = r.exit_code == 3 and hasattr(r, "evidence_ref")
+    return ok, "GateResult carries exit_code + evidence_ref"
 
 
 def no_evidence_means_no() -> tuple[bool, str]:
@@ -180,7 +182,9 @@ def main() -> int:
         possible += p.weight
         if fn is None:
             unmeasured.append(p.id)
-            rows.append(f"  ❓ NOT MEASURED  {p.id}  (no check implemented — counts as a failure)")
+            rows.append(
+                f"  ❓ NOT MEASURED  {p.id}  (no check implemented — counts as a failure)"
+            )
             continue
         try:
             ok, detail = fn()

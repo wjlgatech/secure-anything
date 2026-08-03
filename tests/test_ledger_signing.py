@@ -8,7 +8,7 @@ from secure_anything.ledger import AuditLedger, verify_chain
 from secure_anything.store import AuditEvent
 
 pytest.importorskip("cryptography")
-from secure_anything.signing import Ed25519Signer  # noqa: E402
+from secure_anything.signing import Ed25519Signer
 
 
 def test_sign_and_verify_roundtrip():

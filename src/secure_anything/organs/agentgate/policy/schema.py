@@ -47,7 +47,7 @@ class Policy(BaseModel):
     actors: dict[str, ActorPolicy] = Field(default_factory=dict)
 
     @classmethod
-    def strict(cls) -> "Policy":
+    def strict(cls) -> Policy:
         """Deny-by-default posture, used when no policy document could be loaded.
 
         A bare `Policy()` is NOT strict — it protects no paths, so every check passes,

@@ -15,6 +15,7 @@ Nothing is exported unless `scripts/publish_gate.py` exits 0.
 from __future__ import annotations
 
 import argparse
+import re
 import shutil
 import subprocess
 import sys
@@ -40,7 +41,8 @@ def transform_registry(text: str) -> str:
     new = f"""  - id: agentgate
     kind: family
     role: gate
-    capability: "Actor-aware PR firewall for human + AI-agent code changes: verify -> classify actor -> deterministic checks -> actor-aware decision -> hash-chained, signed audit"
+    capability: "Actor-aware PR firewall for human + AI-agent code changes: verify ->\
+      classify actor -> deterministic checks -> actor-aware decision -> signed audit"
     url: {PRIVATE_ORGAN_URL}
     status: candidate
     license: "Proprietary"
@@ -53,7 +55,7 @@ def transform_registry(text: str) -> str:
       routing surface is honest about what exists; it is NOT distributed here and contributes
       ZERO to the north star (no public run receipt). The composition core it runs on IS here,
       in full — an organ is ~200 lines of adapter over it.
-    triggers: ["review this pr", "gate a pull request", "block an agent pr", "pr firewall", "actor-aware"]
+    triggers: ["review this pr", "gate a pull request", "block an agent pr", "pr firewall"]
 
 """
     return text[:i] + new + text[j:]
@@ -72,7 +74,20 @@ def transform_manifest(text: str) -> str:
     return text
 
 
-TRANSFORMS = {"data/registry.yml": transform_registry, "data/manifest.yml": transform_manifest}
+def transform_makefile(text: str) -> str:
+    """The public tree has no publish gate — that machinery is what keeps IP private and
+    lives only on the private side. Strip it from the target list and the check chain."""
+    text = text.replace(" publish-gate ainative test", " ainative test")
+    text = text.replace(" ainative publish-gate public run", " ainative run")
+    text = re.sub(r"# --- the public mirror.*?\n\n(?=# ---)", "", text, flags=re.S)
+    return re.sub(r"\n# --- the AgentGate organ.*$", "\n", text, flags=re.S)
+
+
+TRANSFORMS = {
+    "data/registry.yml": transform_registry,
+    "data/manifest.yml": transform_manifest,
+    "Makefile": transform_makefile,
+}
 
 
 def export(out: Path, *, force: bool) -> int:
@@ -118,7 +133,8 @@ def export(out: Path, *, force: bool) -> int:
 
     # Regenerate the public tree's own surfaces: its registry differs (the organ is a
     # pointer there), so its README tables and SKILL.md must be built FROM its own data.
-    r = subprocess.run([sys.executable, "scripts/build.py"], cwd=out, capture_output=True, text=True)
+    r = subprocess.run([sys.executable, "scripts/build.py"], cwd=out,
+                       capture_output=True, text=True)
     if r.returncode:
         print(r.stdout + r.stderr, file=sys.stderr)
         return r.returncode

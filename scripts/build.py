@@ -50,7 +50,9 @@ def _rows(s: Spec) -> str:
             if c.pointer_only and c.kind == "external":
                 lic += " ⚠️ pointer-only"
             covers = ", ".join(c.covers) or "—"
-            out.append(f"| {c.status.mark} | [`{c.id}`]({c.url}) | {c.capability} | {lic} | {covers} |")
+            out.append(
+                f"| {c.status.mark} | [`{c.id}`]({c.url}) | {c.capability} | {lic} | {covers} |"
+            )
     return "\n".join(out)
 
 
@@ -69,7 +71,10 @@ def _cards(s: Spec) -> str:
             why = re.sub(r"\s+", " ", why)
             why = why[:150] + ("…" if len(why) > 150 else "")
             link = f"[{c.title}]({c.url})" if c.url.startswith("http") else c.title
-            out.append(f"| {tier[c.evidence.value]} {c.evidence.value} | {link} | {c.by or '—'} | {why} |")
+            out.append(
+                f"| {tier[c.evidence.value]} {c.evidence.value} | {link} | "
+                f"{c.by or '—'} | {why} |"
+            )
     return "\n".join(out)
 
 
@@ -115,12 +120,12 @@ One front door for agent security. This skill **owns no domain logic** — it ro
 2. Run the deterministic router (never guess):
 
    ```bash
-   python3 -c "import sys; sys.path.insert(0,'src'); from secure_anything.router import route; \\
-   r=route('<their intent>'); print([c.id for c in r.capabilities], [c.id for c in r.cards], r.warnings or r.gap)"
+   make route Q="<their intent>"
    ```
 
 3. Relay **every** warning verbatim. They are not decoration:
-   - a **licence wall** (`pointer-only`) means run it upstream — never vendor it, never run it in CI;
+   - a **licence wall** (`pointer-only`) means run it upstream — never vendor it,
+     never run it in CI;
    - an **evidence tier** below `verified` means do not restate the number as a fact.
 4. If the router banks a **gap**, say so plainly and record it. Do not substitute a near miss.
 

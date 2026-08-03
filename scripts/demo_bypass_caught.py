@@ -25,17 +25,17 @@ from sqlalchemy.orm import sessionmaker
 from secure_anything.ledger import AuditLedger
 from secure_anything.organs.agentgate.db import init_db, make_engine
 from secure_anything.organs.agentgate.domain import (
+    ActionType,
     Actor,
     ActorKind,
-    ActionType,
     ChangeSet,
     FileChange,
     PullRequest,
 )
-from secure_anything.store import AuditEvent
 from secure_anything.organs.agentgate.policy import DEFAULT_POLICY_PATH
 from secure_anything.organs.agentgate.policy.engine import load_policy
 from secure_anything.organs.agentgate.worker import evaluate
+from secure_anything.store import AuditEvent
 
 GREEN, RED, YELLOW, DIM, BOLD, RESET = (
     "\033[32m", "\033[31m", "\033[33m", "\033[2m", "\033[1m", "\033[0m"

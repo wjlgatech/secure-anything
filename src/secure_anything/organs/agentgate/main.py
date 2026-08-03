@@ -11,7 +11,7 @@ from fastapi import FastAPI, Header, HTTPException, Request
 from sqlalchemy import select
 
 from .config import get_settings
-from .db import init_db, engine, session_factory
+from .db import engine, init_db, session_factory
 from .models import PRReview
 from .policy.engine import load_policy
 from .queue import get_queue

@@ -32,7 +32,7 @@ def compute_hash(prev_hash: str, kind: str, payload: dict) -> str:
 
 
 class AuditLedger:
-    def __init__(self, session: Session, signer: "Signer | None" = None):
+    def __init__(self, session: Session, signer: Signer | None = None):
         self.session = session
         # Optional Ed25519 signer (ADR-003). When set, each chain head is signed so
         # tampering is detectable even against an operator who can rewrite the DB.
@@ -61,7 +61,7 @@ class AuditLedger:
         return verify_chain(events, signer=self.signer)
 
 
-def verify_chain(events: list[AuditEvent], signer: "Signer | None" = None) -> bool:
+def verify_chain(events: list[AuditEvent], signer: Signer | None = None) -> bool:
     """Chain integrity, plus signature authenticity when a signer is supplied.
     With a signer, every event MUST carry a signature valid for its hash — an
     unsigned row in a signed ledger is treated as tampering (a dropped signature)."""

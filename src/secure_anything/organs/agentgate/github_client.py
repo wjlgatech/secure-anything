@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Callable
+from collections.abc import Callable
 
 import httpx
 
@@ -77,7 +77,7 @@ class GitHubClient:
             raise RuntimeError(
                 "GitHub App auth needs the optional dependency: pip install '.[github]'"
             ) from exc
-        key = open(self.settings.github_app_private_key_path).read()  # noqa: SIM115
+        key = open(self.settings.github_app_private_key_path).read()
         now = int(time.time())
         payload = {"iat": now - 60, "exp": now + 540, "iss": self.settings.github_app_id}
         return jwt.encode(payload, key, algorithm="RS256")

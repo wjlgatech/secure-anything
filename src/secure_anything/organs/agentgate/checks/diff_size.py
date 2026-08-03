@@ -24,4 +24,6 @@ class DiffSizeCheck(Check):
                 detail=f"{churn} changed lines exceeds {cfg.max_churn}",
                 evidence=ev,
             )
-        return CheckResult(name=self.name, passed=True, detail=f"{churn} changed lines", evidence=ev)
+        return CheckResult(
+            name=self.name, passed=True, detail=f"{churn} changed lines", evidence=ev
+        )

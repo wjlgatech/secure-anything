@@ -68,7 +68,7 @@ class Ed25519Signer:
         path.chmod(0o600)
 
     @classmethod
-    def load(cls, path: Path, password: str | None = None) -> "Ed25519Signer":
+    def load(cls, path: Path, password: str | None = None) -> Ed25519Signer:
         from cryptography.hazmat.primitives.serialization import load_pem_private_key
 
         key = load_pem_private_key(
