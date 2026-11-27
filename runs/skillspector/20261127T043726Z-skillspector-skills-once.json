@@ -1,0 +1,40 @@
+{
+  "capability": "skillspector",
+  "command": "$TOOLS/skillspector-each.sh ~/.claude/skills $OUT/skillspector-each.json",
+  "controls": [
+    "LLM01",
+    "LLM03",
+    "ASI04"
+  ],
+  "counts": {
+    "by_risk": {
+      "CRITICAL": 6,
+      "HIGH": 4,
+      "LOW": 90,
+      "MEDIUM": 8
+    },
+    "findings": 6419,
+    "not_scanned": [
+      "five-disciplines",
+      "horizon-research"
+    ],
+    "scanned": 108,
+    "skills": 110
+  },
+  "duration_s": 1561.3,
+  "exit_code": 1,
+  "id": "20261127T043726Z-skillspector-skills-once",
+  "observed": "local",
+  "operator_notes": {},
+  "phase": "once",
+  "ran_at": "2026-11-27T04:37:26+00:00",
+  "ran_on": "darwin-arm64",
+  "report_sha256": "4e4aa7ca2bc0f61d7dd981ac356fb6ade3c50cd12d649ec7c50ba3559409656c",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "summary": "static only (--no-llm, every LLM key unset, offline), one skill per run because a recursive scan of the folder stops at an aggregate report limit (it reached 17 of 51 skills, 28.3% coverage). Exit 1 = at least one skill above SkillSpector's risk threshold; 2 = a scan errored.",
+  "target": "~/.claude/skills",
+  "tool_version": "2.13.7",
+  "triage": "",
+  "verdict": "fail"
+}

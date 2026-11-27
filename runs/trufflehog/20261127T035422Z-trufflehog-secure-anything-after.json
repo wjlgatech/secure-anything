@@ -1,0 +1,27 @@
+{
+  "capability": "trufflehog",
+  "command": "trufflehog git file://$SCAN/secure-anything.git --bare --json --no-update --results=verified,unknown,unverified --fail",
+  "controls": [
+    "LLM02"
+  ],
+  "counts": {
+    "findings": 0,
+    "verified": 0
+  },
+  "duration_s": 0.9,
+  "exit_code": 0,
+  "id": "20261127T035422Z-trufflehog-secure-anything-after",
+  "observed": "local",
+  "operator_notes": {},
+  "phase": "after",
+  "ran_at": "2026-11-27T03:54:22+00:00",
+  "ran_on": "darwin-arm64",
+  "report_sha256": "",
+  "stderr_sha256": "3a2e82bd61a6243c22c75ac37efc659225082b46e988f83b612bdec3e3242959",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "summary": "full git history, every ref incl. PR heads (bare mirror); verified, unknown AND unverified results requested",
+  "target": "wjlgatech/secure-anything@6132835ec05c932b3f8197acee1661ecadc2c2b8",
+  "tool_version": "3.100.1",
+  "triage": "",
+  "verdict": "pass"
+}

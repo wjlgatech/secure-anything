@@ -28,6 +28,7 @@ ROLE_ORDER = [
     ("redteam", "Red team"), ("benchmark", "Benchmarks"), ("policy", "Policy engines"),
     ("threat-model", "Threat modelling"), ("provenance", "Provenance & supply chain"),
     ("skill-library", "Skill supply chain"), ("standard-impl", "Protocols"),
+    ("secrets", "Secrets management"), ("compliance", "Compliance automation"),
     ("engine", "Engines"),
 ]
 CARD_ORDER = [

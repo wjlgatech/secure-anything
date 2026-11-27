@@ -1,0 +1,30 @@
+{
+  "capability": "semgrep",
+  "command": "semgrep scan --metrics=off --config p/default --config p/javascript --config p/typescript --config p/secrets --config p/nextjs --exclude node_modules --json -o $OUT/sg-ap-after.json --severity ERROR --error .",
+  "controls": [
+    "LLM02",
+    "LLM05",
+    "ASI05"
+  ],
+  "counts": {
+    "by_severity": {},
+    "errors": 43,
+    "results": 0
+  },
+  "duration_s": 57.3,
+  "exit_code": 0,
+  "id": "20261127T035632Z-semgrep-agentic-portfolio-after",
+  "observed": "local",
+  "operator_notes": {},
+  "phase": "after",
+  "ran_at": "2026-11-27T03:56:32+00:00",
+  "ran_on": "darwin-arm64",
+  "report_sha256": "0574725bbf01070c52e8f981ad9d356b3c1dcc35a1de6139f8a77a9cdbc73c74",
+  "stderr_sha256": "98cc8073e28f4a7ac9ac7ed8598cef6a5d7a0b6a5d8e8ec539acb9fcbdc2765c",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "summary": "ERROR-severity gate after PR #594 (injection fixed, false positive suppressed with a reason)",
+  "target": "wjlgatech/agentic-portfolio@043b03d9401ac8114126e0083399567ce237b62e",
+  "tool_version": "1.187.0",
+  "triage": "",
+  "verdict": "pass"
+}

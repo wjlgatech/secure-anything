@@ -1,5 +1,65 @@
 # Changelog
 
+## 0.3.0 — 2026-11-26 — first receipts: VCC leaves zero, only by what ran
+
+The 12-tool list from a LinkedIn post (names treated as claims) was resolved against the GitHub API,
+added to the registry, and every tool that could run here without a paid key was run against
+Paul's own repos, site and skills. The north star moved only through signed run receipts.
+
+### Added
+- **`scripts/receipt.py`** — `run` executes a tool and records the exit code the OS returned,
+  hashes of its stdout/stderr/report, and counts parsed from the tool's own report (`PARSERS`);
+  `record` files a run observed elsewhere (CI) as `observed: remote`; `verify` re-derives the chain.
+  Receipts land in `runs/<id>/`, each appended to `runs/ledger.jsonl` (the core's `compute_hash`)
+  and Ed25519-signed (the core's `Ed25519Signer`); public key `runs/receipts.pub`, private key
+  machine-local. No core change: the core stays at its 600-line budget.
+- **`make receipts`** (in `make check`, offline) and `tests/test_receipts.py` (8): an edited exit
+  code, a dropped ledger line, a hand-dropped receipt and a second signing key each fail.
+- **Registry: 10 new capabilities** — `trufflehog`, `gitleaks`, `trivy`, `osv-scanner`, `nuclei`,
+  `skillspector`, `cloudflare-security-audit-skill`, `strix`, `infisical`, `comp-ai` — plus refreshed
+  metadata for `semgrep`, `claude-code-security-review`, `codex-security`, `pyrit`. Two new roles
+  (`secrets`, `compliance`) in the generated tables. 8 new digests in `docs/satellites/`.
+  8 new routing claims in `eval/secure-anything.md`.
+- **Promoted to 🟢 integrated (receipts in `runs/`):** trufflehog, gitleaks, semgrep, trivy,
+  osv-scanner, claude-code-security-review, skillspector.
+
+### What the runs found (receipts in `runs/`; raw reports kept outside the repo)
+- **Secrets: none.** TruffleHog over every ref of agentic-portfolio, ContentFactory and
+  secure-anything: 0 results of any class. gitleaks: 11 hits, all false positives, each suppressed
+  with a reason in the repo's `.gitleaksignore`.
+- **Code:** Semgrep ERROR gate on agentic-portfolio: 2 → 0 (a `workflow_dispatch` input spliced
+  into bash, fixed; a loopback CDP fetch, suppressed with a reason) — agentic-portfolio PR #594.
+- **Dependencies:** agentic-portfolio prod critical 4 → 0 (Next.js 15.5.19 → 15.5.29, nodemailer
+  9 → 10; PR #594); ContentFactory high 5 → 0 (wrangler 4.126 → 4.168; PR #24). Trivy 4 CRITICAL +
+  44 HIGH → 4 HIGH; osv-scanner 129 → 34 advisories (agentic-portfolio), 30 → 0 (ContentFactory).
+- **Live site:** Nuclei could not measure futuremake.io — 73 of 79 responses were Vercel's 403
+  challenge page. `nuclei` stays 🟡.
+- **Skills:** SkillSpector 2.13.7 (static, offline) over `~/.claude/skills`, one skill per run: 108 of 110 scanned (2 symlinks it refuses to follow), 6 CRITICAL / 4 HIGH. Hand triage of every CRITICAL/HIGH: all false positives (an API key sent to its own provider, a destination URL read from env, cleanup `rm -f`, a skill that quotes "ignore previous instructions" in order to forbid it) except one real low: `freellmapi` tells the agent to pipe a third-party install script into bash. A recursive scan of the folder had stopped at 17 skills (28.3% coverage, its own report), which is why it ran per skill.
+- **CI added** to both family repos (`.github/workflows/security.yml`): TruffleHog, Semgrep (new
+  ERROR only), dependency audit, advisory claude-code-security-review.
+
+### Deferred — needs a paid key, a long agent session, or a production decision (cost = our estimate, not a vendor quote)
+| tool | blocker | rough cost per run | would cover |
+|---|---|---|---|
+| `codex-security` | ChatGPT/Codex Security access or `OPENAI_API_KEY` (the OpenAI balance was 0 on 2026-11-26) | ~$10–50 per deep repo scan | LLM02, LLM03, LLM05, ASI05 |
+| `strix` | `STRIX_LLM` + `LLM_API_KEY`, Docker; actively attacks the target — preview deploys only | ~$5–30 per scan (millions of tokens) | LLM05, ASI05 |
+| `pyrit` | a target LLM endpoint + an attacker/scorer model | ~$1–5 per 100-prompt campaign, plus the target's quota | LLM01, LLM09, ASI01 |
+| `skillspector` LLM stage | a provider key (its default is NVIDIA's; a free build.nvidia.com key may do) | $0–2 | deepens LLM01 |
+| `cloudflare-security-audit-skill` | a multi-phase agent session per repo | hours of model time per repo | LLM02, LLM05, ASI05 |
+| `claude-code-security-review` in ContentFactory | `ANTHROPIC_API_KEY` repo secret | ~$0.05–0.50 per PR | LLM02, LLM05 |
+| `infisical` | NOASSERTION licence (MIT outside `ee/`); adopting it moves production secrets | $0 software, a migration | LLM02, ASI03 |
+| `comp-ai` | self-hosted app + database; only useful when someone asks for SOC 2 evidence | $0 software, setup time | none of the OWASP controls |
+
+### Investigated / Rejected
+- **Promoting `nuclei` on its exit code 0:** rejected — 0 of 79 responses reached the app. A scan
+  answered by a firewall is a receipt, not a measurement.
+- **Writing receipts by hand from earlier shell runs:** rejected — every receipt is produced by
+  `receipt.py`, which runs the tool itself. The first night's ad-hoc runs inform the triage only.
+  Three receipts produced by a shell word-splitting mistake (a wrong path, exit 1 in one second)
+  were discarded before anything was committed and the runs repeated.
+- **Mapping the scanners to more controls:** each mapping names only the slice the tool actually
+  checked (see `## Honest edges`); `comp-ai` maps to none.
+
 ## 0.2.0 — 2026-08-03 — AgentGate becomes secure-anything (M0: born green)
 
 The repo becomes a **meta-repo**: a lean composition core over a rich ecosystem. AgentGate is

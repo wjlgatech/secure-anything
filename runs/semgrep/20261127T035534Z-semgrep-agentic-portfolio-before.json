@@ -1,0 +1,32 @@
+{
+  "capability": "semgrep",
+  "command": "semgrep scan --metrics=off --config p/default --config p/javascript --config p/typescript --config p/secrets --config p/nextjs --exclude node_modules --json -o $OUT/sg-ap-before.json --severity ERROR --error .",
+  "controls": [
+    "LLM02",
+    "LLM05",
+    "ASI05"
+  ],
+  "counts": {
+    "by_severity": {
+      "ERROR": 2
+    },
+    "errors": 39,
+    "results": 2
+  },
+  "duration_s": 54.8,
+  "exit_code": 1,
+  "id": "20261127T035534Z-semgrep-agentic-portfolio-before",
+  "observed": "local",
+  "operator_notes": {},
+  "phase": "before",
+  "ran_at": "2026-11-27T03:55:34+00:00",
+  "ran_on": "darwin-arm64",
+  "report_sha256": "6f57e6b7b96fb1add8d2ae307d01205b380ab9af567110ca58897b10668009af",
+  "stderr_sha256": "e8159cc762655a4620ca058e47bcd980599ae1fe3a260b3e16e34216706b39ff",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "summary": "ERROR-severity gate before the fix (run-shell-injection in a workflow + a loopback false positive)",
+  "target": "wjlgatech/agentic-portfolio@ab680f19041d28a8ed6fa89ab5cce349ffe7f8f5",
+  "tool_version": "1.187.0",
+  "triage": "",
+  "verdict": "fail"
+}

@@ -1,0 +1,33 @@
+{
+  "capability": "semgrep",
+  "command": "semgrep scan --metrics=off --config p/default --config p/javascript --config p/typescript --config p/secrets --config p/nextjs --exclude node_modules --json -o $OUT/sg-ap-all.json .",
+  "controls": [
+    "LLM02",
+    "LLM05",
+    "ASI05"
+  ],
+  "counts": {
+    "by_severity": {
+      "INFO": 3,
+      "WARNING": 796
+    },
+    "errors": 313,
+    "results": 799
+  },
+  "duration_s": 187.7,
+  "exit_code": 0,
+  "id": "20261127T035940Z-semgrep-agentic-portfolio-after",
+  "observed": "local",
+  "operator_notes": {},
+  "phase": "after",
+  "ran_at": "2026-11-27T03:59:40+00:00",
+  "ran_on": "darwin-arm64",
+  "report_sha256": "3a7a42b84603663bfc2e41942b98644dffcda5aa284548d672f8ddfe646a3dc3",
+  "stderr_sha256": "95b194afab3da6ea7aa06b494f4e9656d7fcde4e4dd42c711e84c7daaa974eaf",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "summary": "all severities, informational (WARNING/INFO triaged: non-literal RegExp from constants, canonical <link> flagged as missing SRI, mutable action tags in older workflows)",
+  "target": "wjlgatech/agentic-portfolio@043b03d9401ac8114126e0083399567ce237b62e",
+  "tool_version": "1.187.0",
+  "triage": "",
+  "verdict": "pass"
+}

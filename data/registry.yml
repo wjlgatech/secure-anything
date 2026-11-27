@@ -21,7 +21,7 @@
 # All stars/license/pushed_at below were read from the GitHub API on 2026-08-03.
 
 version: "1.0"
-updated: "2026-08-03"
+updated: "2026-11-26"
 mappings_asserted_by: "secure-anything"
 mappings_asserted_at: "2026-08-03"
 
@@ -84,9 +84,9 @@ capabilities:
     pinned_sha: 0572feb293e4ec49956fde99b4d6843a80ea884b
     license: Apache-2.0
     license_confirmed: true
-    stars: 8332
-    upstream_pushed_at: "2026-08-03"
-    verified_at: "2026-08-03"
+    stars: 14412
+    upstream_pushed_at: "2026-11-26"
+    verified_at: "2026-11-26"
     covers: [LLM02, LLM03, LLM05, ASI05]
     notes: >-
       The repo Paul named. Apache-2.0 ⇒ integratable, but requires a ChatGPT/API credential and
@@ -99,14 +99,19 @@ capabilities:
     role: scanner
     capability: "Lightweight, offline, pattern-based static analysis across many languages — the deterministic scanner that CAN run inside an offline gate"
     url: https://github.com/semgrep/semgrep
-    status: candidate
+    status: integrated
+    pinned_sha: 082ca45478ee4dcc4275d805c0325a7fcd509990
     license: LGPL-2.1
     license_confirmed: true
-    stars: 16094
-    upstream_pushed_at: "2026-08-03"
-    verified_at: "2026-08-03"
+    stars: 17995
+    upstream_pushed_at: "2026-11-27"
+    verified_at: "2026-11-26"
     covers: [LLM02, LLM05, ASI05]
-    notes: "LGPL-2.1 ⇒ invoke as a subprocess, never link/vendor. Top M2 chain candidate precisely because it is offline and deterministic."
+    notes: >-
+      LGPL-2.1 ⇒ invoke as a subprocess, never link/vendor. Pinned to the v1.187.0 release commit
+      (the version run here). Rules come from the registry (p/default, p/secrets, p/javascript,
+      p/typescript, p/nextjs) — that fetch is network, so it runs as an explicit sweep and in the
+      family repos' CI, never inside `make check`. Digest: docs/satellites/semgrep.md
     triggers: ["static analysis", "semgrep", "lint for security", "offline scan"]
 
   - id: codeql
@@ -129,15 +134,216 @@ capabilities:
     role: scanner
     capability: "GitHub Action that uses Claude to security-review a diff — the AI-reviewer counterpart to AgentGate's deterministic checks"
     url: https://github.com/anthropics/claude-code-security-review
+    status: integrated
+    pinned_sha: 0c6a49f1fa56a1d472575da86a94dbc1edb78eda
+    license: MIT
+    license_confirmed: true
+    stars: 7141
+    upstream_pushed_at: "2026-02-11"
+    verified_at: "2026-11-26"
+    covers: [LLM02, LLM05]
+    notes: >-
+      Closest prior art to AgentGate's LLM-review seam. Diff-scoped, so it complements rather than
+      duplicates codex-security's whole-repo scan. Needs an ANTHROPIC_API_KEY (spends credit per
+      PR) and is "not hardened against prompt injection" per its own README — trusted PRs only,
+      advisory, never a blocking gate. Digest: docs/satellites/claude-code-security-review.md
+    triggers: ["ai code review", "review this diff for security", "claude security review"]
+
+  # ─────────────── 2026-11-26 sweep: the 12-tool list (LinkedIn post, names treated as claims) ───────
+  - id: trufflehog
+    kind: external
+    role: scanner
+    capability: "Finds leaked credentials in git history (and chats, buckets, CI logs) and VERIFIES each against its provider, so a hit says live / dead / unknown instead of 'looks like a key'"
+    url: https://github.com/trufflesecurity/trufflehog
+    status: integrated
+    pinned_sha: 4ef51f69ca6347aaa76a5e64a87eac9c0c909f71
+    license: AGPL-3.0
+    license_confirmed: true
+    stars: 29718
+    upstream_pushed_at: "2026-11-25"
+    verified_at: "2026-11-26"
+    covers: [LLM02]
+    notes: >-
+      AGPL-3.0 ⇒ run the released binary as a subprocess, never link or vendor. Pinned to the
+      v3.100.1 release commit (the binary run here, checksum verified). Verification calls the
+      provider's API, so it is network-boundary — a sweep and CI capability, never inside
+      `make check`. LLM02 mapping covers the credentials-in-source slice of sensitive-information
+      disclosure only. Digest: docs/satellites/trufflehog.md
+    triggers: ["leaked secrets", "secrets in git history", "trufflehog", "scan for secrets", "leaked api key"]
+
+  - id: gitleaks
+    kind: external
+    role: scanner
+    capability: "Regex/entropy secret scanner over git history with redaction, fingerprints and a .gitleaksignore for triaged false positives — the offline second opinion to TruffleHog"
+    url: https://github.com/gitleaks/gitleaks
+    status: integrated
+    pinned_sha: 83d9cd684c87d95d656c1458ef04895a7f1cbd8e
+    license: MIT
+    license_confirmed: true
+    stars: 31376
+    upstream_pushed_at: "2026-11-25"
+    verified_at: "2026-11-26"
+    covers: [LLM02]
+    notes: >-
+      Not on the 12-tool list; added because the task allowed "TruffleHog (or gitleaks)" and two
+      engines disagreeing is information (2026-11-26: TruffleHog 0 hits, gitleaks 11 — all false
+      positives, each triaged with a reason). Fully offline. Digest: docs/satellites/gitleaks.md
+    triggers: ["gitleaks", "gitleaksignore", "secret scan offline"]
+
+  - id: trivy
+    kind: external
+    role: scanner
+    capability: "Scans filesystems, lockfiles, images, IaC and Kubernetes for known-vulnerable dependencies (CVEs), misconfigurations, secrets and licences; emits SBOMs"
+    url: https://github.com/aquasecurity/trivy
+    status: integrated
+    pinned_sha: 3f6334d223b52188324af3b9923b4249cd206652
+    license: Apache-2.0
+    license_confirmed: true
+    stars: 39803
+    upstream_pushed_at: "2026-11-26"
+    verified_at: "2026-11-26"
+    covers: [LLM03, ASI04]
+    notes: >-
+      Pinned to the v0.76.2 release commit (the binary run here, checksum verified). Downloads its
+      vulnerability DB on first run (network), so it is a sweep capability. LLM03 explicitly lists
+      traditional third-party package vulnerabilities; ASI04 is the agentic app's own supply chain.
+      Digest: docs/satellites/trivy.md
+    triggers: ["vulnerable dependencies", "known cves", "trivy", "sbom", "dependency scan", "container scan"]
+
+  - id: osv-scanner
+    kind: external
+    role: scanner
+    capability: "Google's front end to the OSV.dev database: matches lockfile dependencies to known vulnerabilities, with an offline mode and guided remediation"
+    url: https://github.com/google/osv-scanner
+    status: integrated
+    pinned_sha: 02f96a40691c2d155fdda799af436e111231e365
+    license: Apache-2.0
+    license_confirmed: true
+    stars: 11643
+    upstream_pushed_at: "2026-11-26"
+    verified_at: "2026-11-26"
+    covers: [LLM03, ASI04]
+    notes: >-
+      Not on the 12-tool list; the task allowed "Trivy fs (or osv-scanner)" and both were run as
+      cross-checks of each other. Sends package names + versions to api.osv.dev unless --offline.
+      Digest: docs/satellites/osv-scanner.md
+    triggers: ["osv-scanner", "osv.dev", "open source vulnerabilities"]
+
+  - id: nuclei
+    kind: external
+    role: scanner
+    capability: "Template-driven scanner for live targets (HTTP, DNS, TLS…): exposures, misconfigurations, takeovers, CVEs — community templates in YAML"
+    url: https://github.com/projectdiscovery/nuclei
+    status: digested
+    pinned_sha: a8c88feb4a1c8e961b7902534ce3af97e9d524a4
+    license: MIT
+    license_confirmed: true
+    stars: 33340
+    upstream_pushed_at: "2026-11-26"
+    verified_at: "2026-11-26"
+    covers: [LLM02]
+    notes: >-
+      Active scanner: only against systems you own, with safe tags (exposure, misconfig, takeover),
+      intrusive/dos/fuzz excluded, interactsh off, low rate. Pinned to the v3.11.1 release commit.
+      LLM02 = exposed files/configs/tokens on the deployed surface. Edge found 2026-11-26: Vercel's
+      firewall answered part of the sweep with a 403 challenge page, so a clean result is only as
+      good as the share of real responses — the receipt states that share. Digest:
+      docs/satellites/nuclei.md
+    triggers: ["nuclei", "scan my live site", "exposed files", "subdomain takeover", "misconfiguration scan", "dast"]
+
+  - id: skillspector
+    kind: external
+    role: scanner
+    capability: "NVIDIA's scanner for agent skills (Claude Code, Codex, MCP): static patterns + YARA for prompt injection, exfiltration, dangerous code and supply-chain risk, with an optional LLM pass"
+    url: https://github.com/NVIDIA/SkillSpector
+    status: integrated
+    pinned_sha: c323ad4c43e3c8f2de051572cc25b2711d11e648
+    license: Apache-2.0
+    license_confirmed: true
+    stars: 27815
+    upstream_pushed_at: "2026-11-25"
+    verified_at: "2026-11-26"
+    covers: [LLM01, LLM03, ASI04]
+    notes: >-
+      The scanner the skills-registry entry said we lacked. Run with --no-llm (static only, offline)
+      over ~/.claude/skills; the LLM stage needs a provider key and was not run. Pinned to the
+      v2.13.7 release commit (the PyPI version installed). Digest: docs/satellites/skillspector.md
+    triggers: ["skillspector", "is this skill safe", "scan a skill", "skill security scan", "malicious skill"]
+
+  - id: cloudflare-security-audit-skill
+    kind: external
+    role: scanner
+    capability: "A coding-agent skill for multi-phase security audits (recon → hunting → validation) whose findings are machine-readable and independently validated by bundled JS checkers"
+    url: https://github.com/cloudflare/security-audit-skill
     status: candidate
     license: MIT
     license_confirmed: true
-    stars: 5742
-    upstream_pushed_at: "2026-02-11"
-    verified_at: "2026-08-03"
-    covers: [LLM02, LLM05]
-    notes: "Closest prior art to AgentGate's LLM-review seam. Diff-scoped, so it complements rather than duplicates codex-security's whole-repo scan."
-    triggers: ["ai code review", "review this diff for security", "claude security review"]
+    stars: 78907
+    upstream_pushed_at: "2026-09-14"
+    verified_at: "2026-11-26"
+    covers: [LLM02, LLM05, ASI05]
+    notes: >-
+      The post called it "Cloudflare's security audit skill"; it is NOT in cloudflare/skills (read
+      2026-11-26) but its own repo, cloudflare/security-audit-skill (SKILL.md + 13 phase guides +
+      report-schema.json + validate-findings.cjs). NOT RUN: an audit is a long agent session (hours
+      of model time per repo), not a binary. Star count read from the API; very high for a repo
+      created 2026-06-18 — recorded as read, not interpreted.
+    triggers: ["security audit skill", "cloudflare security audit", "multi-phase audit", "multi-phase security audit"]
+
+  - id: strix
+    kind: external
+    role: redteam
+    capability: "Autonomous AI pentesting agents that run your app in a sandbox, attack it like a human tester and validate each finding with a proof of concept"
+    url: https://github.com/usestrix/strix
+    status: candidate
+    license: Apache-2.0
+    license_confirmed: true
+    stars: 77813
+    upstream_pushed_at: "2026-11-26"
+    verified_at: "2026-11-26"
+    covers: [LLM05, ASI05]
+    notes: >-
+      NOT RUN: needs an LLM key (STRIX_LLM + LLM_API_KEY) and Docker, and a scan is a long multi-agent
+      session that actively attacks the target. Run it against a preview deployment, never
+      production. Cost estimate in the 2026-11-26 CHANGELOG entry.
+    triggers: ["strix", "ai pentest", "ai penetration test", "autonomous pentest"]
+
+  - id: infisical
+    kind: external
+    role: secrets
+    capability: "Open-source secrets manager: central store, sync to CI/hosts, dynamic secrets, rotation, secret scanning, certificates and machine identities"
+    url: https://github.com/Infisical/infisical
+    status: candidate
+    license: NOASSERTION
+    license_confirmed: false
+    stars: 30819
+    upstream_pushed_at: "2026-11-27"
+    verified_at: "2026-11-26"
+    covers: [LLM02, ASI03]
+    notes: >-
+      License NOASSERTION (MIT core plus an enterprise directory under its own licence) ⇒ POINTER
+      ONLY until a human confirms. Not a scanner — the PREVENTION side of what TruffleHog detects.
+      Adopting it means migrating Vercel/GitHub secrets, a production-settings decision for Paul.
+    triggers: ["secrets manager", "infisical", "rotate secrets", "secret rotation"]
+
+  - id: comp-ai
+    kind: external
+    role: compliance
+    capability: "Open-source compliance automation (SOC 2, ISO 27001, HIPAA, GDPR): policies, evidence collection, vendor and risk tracking — a Vanta/Drata alternative"
+    url: https://github.com/trycompai/comp
+    status: candidate
+    license: AGPL-3.0
+    license_confirmed: true
+    stars: 2149
+    upstream_pushed_at: "2026-11-23"
+    verified_at: "2026-11-26"
+    covers: []
+    notes: >-
+      Maps to compliance frameworks, not to the OWASP LLM/agentic controls this repo's north star
+      counts — so `covers` is empty on purpose. AGPL-3.0 ⇒ self-host as a separate service, never
+      link. NOT RUN: a self-hosted web app with a database and integrations, useful only once a
+      customer asks for SOC 2 evidence.
+    triggers: ["soc 2", "iso 27001", "compliance automation", "comp ai", "vanta alternative"]
 
   # ─────────────────────────── guardrails (runtime defense) ──────────────────────────────────
   - id: purplellama
@@ -267,14 +473,17 @@ capabilities:
     status: candidate
     license: MIT
     license_confirmed: true
-    stars: 4232
-    upstream_pushed_at: "2026-08-03"
-    verified_at: "2026-08-03"
+    stars: 5129
+    upstream_pushed_at: "2026-11-27"
+    verified_at: "2026-11-26"
     covers: [LLM01, LLM09, ASI01]
     notes: >-
       CORRECTION BANKED 2026-08-03: Azure/PyRIT is ARCHIVED (114 stars) and is NOT the live repo.
       The live project is microsoft/PyRIT. A registry that recorded the archived fork would have
       pinned a dead SHA — this is why metadata is API-verified, never recalled.
+      NOT RUN (2026-11-26): every PyRIT attack needs a target LLM endpoint plus an attacker/scorer
+      LLM, i.e. two paid or rate-limited model keys and a live target; deferred, see the
+      2026-11-26 sweep entry in CHANGELOG.md for the cost estimate.
     triggers: ["pyrit", "automated red teaming", "orchestrate attacks"]
 
   - id: agentic-security

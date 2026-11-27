@@ -1,0 +1,30 @@
+{
+  "capability": "semgrep",
+  "command": "semgrep scan --metrics=off --config p/default --config p/javascript --config p/typescript --config p/secrets --config p/nextjs --exclude node_modules --json -o $OUT/sg-cf-after.json --severity ERROR --error .",
+  "controls": [
+    "LLM02",
+    "LLM05",
+    "ASI05"
+  ],
+  "counts": {
+    "by_severity": {},
+    "errors": 1,
+    "results": 0
+  },
+  "duration_s": 8.1,
+  "exit_code": 0,
+  "id": "20261127T040041Z-semgrep-contentfactory-after",
+  "observed": "local",
+  "operator_notes": {},
+  "phase": "after",
+  "ran_at": "2026-11-27T04:00:41+00:00",
+  "ran_on": "darwin-arm64",
+  "report_sha256": "a6bab11c355f392bd330f13bbc5d26a727a25169d55c80475139cfc027fbf19a",
+  "stderr_sha256": "536e4f94ab75dab96663ab2a848620300f884a2b8f52b3de9e2bc04710bc55ba",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "summary": "ERROR-severity gate (the run before this one passed --error on all severities by mistake, so 189 WARNINGs exited 1)",
+  "target": "wjlgatech/ContentFactory@74e77fa72c2532b38316f915ece7b1fddff0a291",
+  "tool_version": "1.187.0",
+  "triage": "",
+  "verdict": "pass"
+}

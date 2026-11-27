@@ -1,0 +1,28 @@
+{
+  "capability": "osv-scanner",
+  "command": "osv-scanner scan source -r --format json --output-file $OUT/osv-agentic-portfolio-after.json $SCAN/agentic-portfolio-after",
+  "controls": [
+    "LLM03",
+    "ASI04"
+  ],
+  "counts": {
+    "vulnerabilities": 34,
+    "vulnerable_packages": 15
+  },
+  "duration_s": 2.1,
+  "exit_code": 1,
+  "id": "20261127T040008Z-osv-scanner-agentic-portfolio-after",
+  "observed": "local",
+  "operator_notes": {},
+  "phase": "after",
+  "ran_at": "2026-11-27T04:00:08+00:00",
+  "ran_on": "darwin-arm64",
+  "report_sha256": "2d2fd204f8ef8fdda71abc933b38c21ca1daa8c1e0a1bfc18e5396b9972121f5",
+  "stderr_sha256": "4a23bc01eb0437a654230a48ce05fa914bbd8612cc9dad2849e402724dc98dee",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "summary": "osv-scanner scan source -r (all severities, incl. dev dependencies); exit 1 = any known vulnerability",
+  "target": "wjlgatech/agentic-portfolio@043b03d9401ac8114126e0083399567ce237b62e",
+  "tool_version": "2.7.1",
+  "triage": "",
+  "verdict": "fail"
+}
