@@ -1,0 +1,30 @@
+{
+  "capability": "trivy",
+  "command": "trivy fs --scanners vuln --quiet --skip-dirs node_modules --severity HIGH,CRITICAL --exit-code 1 --format json -o $OUT/tv-agentic-portfolio-before.json $SCAN/agentic-portfolio",
+  "controls": [
+    "LLM03",
+    "ASI04"
+  ],
+  "counts": {
+    "vulnerabilities_by_severity": {
+      "CRITICAL": 4,
+      "HIGH": 44
+    }
+  },
+  "duration_s": 0.7,
+  "exit_code": 1,
+  "id": "20261127T035959Z-trivy-agentic-portfolio-before",
+  "observed": "local",
+  "operator_notes": {},
+  "phase": "before",
+  "ran_at": "2026-11-27T03:59:59+00:00",
+  "ran_on": "darwin-arm64",
+  "report_sha256": "05143ba65361429b9e3b667dada94938e63c6a38b442a8c175790ca337efc2d5",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "summary": "trivy fs --scanners vuln on every lockfile, incl. dev dependencies; exit 1 = a HIGH or CRITICAL exists",
+  "target": "wjlgatech/agentic-portfolio@ab680f19041d28a8ed6fa89ab5cce349ffe7f8f5",
+  "tool_version": "0.76.2",
+  "triage": "",
+  "verdict": "fail"
+}

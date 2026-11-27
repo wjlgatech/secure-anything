@@ -13,7 +13,7 @@ do not edit the threshold in passing.
 
 ```bash
 make install
-make check     # ruff · charter manifest · registry evidence · build drift · self-audit · pytest
+make check     # ruff · charter manifest · registry evidence · receipts · build drift · self-audit · pytest
 ```
 
 What each stage means:
@@ -23,6 +23,7 @@ What each stage means:
 | `lint` | ruff finds an issue in `src`, `tests` or `scripts` |
 | `manifest` | a charter doc is missing, too short, or lost a required heading |
 | `registry` | a status claims evidence that isn't on disk (no digest, no pinned SHA, no receipt) |
+| `receipts` | a run receipt was edited, dropped from `runs/ledger.jsonl`, added outside it, or signed by a key other than `runs/receipts.pub` |
 | `build-check` | a generated surface (README blocks, the flagship SKILL.md) drifted from `data/` |
 | `ainative` | a discipline regressed — the self-audit dropped below 90 |
 | `test` | any test fails, including the architectural invariants |
@@ -68,6 +69,17 @@ Read [README.md](README.md), then [docs/VISION.md](docs/VISION.md) for the chart
 - **Adding a capability?** One entry in `data/registry.yml` (⚪), then a digest in
   `docs/satellites/<id>.md` with a pinned SHA (🟡), then a run receipt in `runs/<id>/` (🟢).
   If it costs more than that, the composition layer has leaked domain logic.
+- **Recording a run?** Never write a receipt by hand. `python3 scripts/receipt.py run
+  --capability <id> --target <owner/repo@40-hex-sha | https URL | path> --tool-version <v>
+  [--report <file>] [--phase before|after|once] -- <command>` runs the tool and records the exit
+  code the OS returned; counts come from the tool's report (`PARSERS`). A CI run goes in with
+  `receipt.py record --ran-on … --evidence-url …`. Raw reports stay outside the repo. Receipts are
+  append-only — a mistaken run stays, followed by the corrected one. Run one receipt at a time:
+  the ledger is a single chain. The signing key is `~/.secure-anything/receipts-ed25519.pem`
+  (machine-local, 0600); a different key is refused, so a new machine needs that key copied, not a
+  new one generated.
+- **Promote to 🟢 only when the run measured the thing.** A scan answered by a firewall challenge,
+  or one that stopped at a coverage limit, is a receipt — not a measurement (see `nuclei`).
 - **Adding a knowledge card?** `data/knowledge.yml`, with an evidence tier and a `verified_at`.
 - **Adding a routing claim?** `eval/secure-anything.md` — it is parsed into pytest cases, so an
   unroutable claim fails the build.

@@ -1,0 +1,30 @@
+{
+  "capability": "gitleaks",
+  "command": "gitleaks git $SCAN/agentic-portfolio.git --log-opts=--all --redact --no-banner --report-format json --report-path $OUT/gl-ap-before.json",
+  "controls": [
+    "LLM02"
+  ],
+  "counts": {
+    "by_rule": {
+      "generic-api-key": 8,
+      "linkedin-client-id": 2
+    },
+    "findings": 10
+  },
+  "duration_s": 6.7,
+  "exit_code": 1,
+  "id": "20261127T035429Z-gitleaks-agentic-portfolio-before",
+  "observed": "local",
+  "operator_notes": {},
+  "phase": "before",
+  "ran_at": "2026-11-27T03:54:29+00:00",
+  "ran_on": "darwin-arm64",
+  "report_sha256": "8086bc6dbbbe1fb297842bd5a9705c196ad1caae1b695da50e11081b3bf48eb4",
+  "stderr_sha256": "689de2c6d4daa3e1d6a3ff69f6d796766844ed893fcd1ec7c072077e50273123",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "summary": "all refs, before triage: every hit counts",
+  "target": "wjlgatech/agentic-portfolio@043b03d9401ac8114126e0083399567ce237b62e",
+  "tool_version": "8.30.1",
+  "triage": "",
+  "verdict": "fail"
+}

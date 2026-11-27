@@ -20,6 +20,9 @@ AgentGate survives in full as the first **organ** — see `docs/organs/agentgate
 make install     # pip install -e ".[dev]"  (Python >=3.11)
 make check       # THE canonical gate; CI runs exactly this
 make northstar   # Verified Control Coverage, computed offline from data/
+make receipts    # every run receipt is in the signed, hash-chained ledger (offline; in check)
+python3 scripts/receipt.py run --capability <id> --target <owner/repo@sha> --tool-version <v> \
+    [--report <file>] -- <command>          # run a tool and record its receipt
 make route Q="scan my repo"   # drive the deterministic router
 make build       # regenerate every published surface from data/
 make run         # AgentGate organ: uvicorn on :8099
@@ -28,8 +31,8 @@ make run         # AgentGate organ: uvicorn on :8099
 Run a single test: `python -m pytest tests/test_gate_seam.py::test_name -q`
 (`pyproject.toml` sets `pythonpath = ["src"]`, so tests import without install.)
 
-`make check` = ruff · charter manifest · registry evidence · build drift · self-audit (≥90) ·
-pytest. **Never weaken a test or a budget to make it pass** — an honest ❌ beats a fake ✅.
+`make check` = ruff · charter manifest · registry evidence · receipts · build drift ·
+self-audit (≥90) · pytest. **Never weaken a test or a budget to make it pass** — an honest ❌ beats a fake ✅.
 
 ## Architecture — three layers, one direction
 
@@ -75,6 +78,13 @@ eval/secure-anything.md     ← every routing claim, parsed into pytest cases
 - **Checks are deterministic and offline.** No network, no API key in `make check`.
 - **No silent stubs.** Unimplemented paths raise `NotImplementedError`.
 - **Everything consequential appends to the ledger** (`secure_anything.ledger`).
+- **A receipt is produced, never written.** Only `scripts/receipt.py run|record` creates files under
+  `runs/`; it captures the OS exit code and parses counts from the tool's own report. Receipts are
+  append-only and chained in `runs/ledger.jsonl`, signed with the machine-local key
+  `~/.secure-anything/receipts-ed25519.pem` (public half `runs/receipts.pub`). Raw tool reports
+  never enter the repo (they quote private source); receipts pin them by sha256.
+- **Promote to 🟢 only when the run measured the target.** A firewall challenge page, a coverage
+  limit or a tool error is a receipt, not a measurement (`nuclei` stays 🟡 for this reason).
 
 ## Adding things
 
@@ -86,8 +96,9 @@ eval/secure-anything.md     ← every routing claim, parsed into pytest cases
 
 ## Current status
 
-**M0 (Foundation) complete — born green.** `make check` passes: 132 tests, self-audit 100/100,
-zero drift. North star **VCC = 0/20 (0%)** — nothing has an integrated run receipt yet, which is
-the honest reading and the M1/M2 queue. Next: M1 digest waves (every ⚪ → 🟡), then M2's first
-proven chain. AgentGate's own Phase 1.5 (non-bypassable enforcement) continues in parallel and is
-not blocked by the meta work.
+**First receipts (2026-11-26, v0.3.0).** Seven capabilities are 🟢 integrated with signed run
+receipts in `runs/` (trufflehog, gitleaks, semgrep, trivy, osv-scanner, claude-code-security-review,
+skillspector); the live VCC is the generated block in README.md (`make northstar`). `nuclei` ran but
+was answered by Vercel's firewall, so it stays 🟡. Deferred for money or long agent sessions:
+codex-security, strix, pyrit, the SkillSpector LLM stage, cloudflare-security-audit-skill (costs in
+CHANGELOG.md). AgentGate's Phase 1.5 continues in parallel.

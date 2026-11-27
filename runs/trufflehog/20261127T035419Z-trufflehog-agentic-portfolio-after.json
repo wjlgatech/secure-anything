@@ -1,0 +1,27 @@
+{
+  "capability": "trufflehog",
+  "command": "trufflehog git file://$SCAN/agentic-portfolio.git --bare --json --no-update --results=verified,unknown,unverified --fail",
+  "controls": [
+    "LLM02"
+  ],
+  "counts": {
+    "findings": 0,
+    "verified": 0
+  },
+  "duration_s": 10.5,
+  "exit_code": 0,
+  "id": "20261127T035419Z-trufflehog-agentic-portfolio-after",
+  "observed": "local",
+  "operator_notes": {},
+  "phase": "after",
+  "ran_at": "2026-11-27T03:54:19+00:00",
+  "ran_on": "darwin-arm64",
+  "report_sha256": "",
+  "stderr_sha256": "a6903e469f00a39cab0ffddcea370fcd877e413a52bfeb235e42e82dc17843da",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "summary": "full git history, every ref incl. PR heads (bare mirror); verified, unknown AND unverified results requested",
+  "target": "wjlgatech/agentic-portfolio@043b03d9401ac8114126e0083399567ce237b62e",
+  "tool_version": "3.100.1",
+  "triage": "",
+  "verdict": "pass"
+}

@@ -1,0 +1,27 @@
+{
+  "capability": "trufflehog",
+  "command": "trufflehog git file://$SCAN/ContentFactory.git --bare --json --no-update --results=verified,unknown,unverified --fail",
+  "controls": [
+    "LLM02"
+  ],
+  "counts": {
+    "findings": 0,
+    "verified": 0
+  },
+  "duration_s": 1.2,
+  "exit_code": 0,
+  "id": "20261127T035421Z-trufflehog-contentfactory-after",
+  "observed": "local",
+  "operator_notes": {},
+  "phase": "after",
+  "ran_at": "2026-11-27T03:54:21+00:00",
+  "ran_on": "darwin-arm64",
+  "report_sha256": "",
+  "stderr_sha256": "89c352d108e3f2dc0ce9f09703e4e462c41c78114c418c79ab126ce931145549",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "summary": "full git history, every ref incl. PR heads (bare mirror); verified, unknown AND unverified results requested",
+  "target": "wjlgatech/ContentFactory@74e77fa72c2532b38316f915ece7b1fddff0a291",
+  "tool_version": "3.100.1",
+  "triage": "",
+  "verdict": "pass"
+}

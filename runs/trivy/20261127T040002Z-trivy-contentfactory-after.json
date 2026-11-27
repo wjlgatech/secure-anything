@@ -1,0 +1,27 @@
+{
+  "capability": "trivy",
+  "command": "trivy fs --scanners vuln --quiet --skip-dirs node_modules --severity HIGH,CRITICAL --exit-code 1 --format json -o $OUT/tv-ContentFactory-after.json $SCAN/ContentFactory-after",
+  "controls": [
+    "LLM03",
+    "ASI04"
+  ],
+  "counts": {
+    "vulnerabilities_by_severity": {}
+  },
+  "duration_s": 0.2,
+  "exit_code": 0,
+  "id": "20261127T040002Z-trivy-contentfactory-after",
+  "observed": "local",
+  "operator_notes": {},
+  "phase": "after",
+  "ran_at": "2026-11-27T04:00:02+00:00",
+  "ran_on": "darwin-arm64",
+  "report_sha256": "5ea185cb79fe166b1cc4788fcae31d7be055ce38633d6d10826ab06fd4816a0c",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "summary": "trivy fs --scanners vuln on every lockfile, incl. dev dependencies; exit 1 = a HIGH or CRITICAL exists",
+  "target": "wjlgatech/ContentFactory@74e77fa72c2532b38316f915ece7b1fddff0a291",
+  "tool_version": "0.76.2",
+  "triage": "",
+  "verdict": "pass"
+}

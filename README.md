@@ -20,16 +20,17 @@
 ## Where we stand
 
 <!-- BEGIN GENERATED: northstar -->
-**Verified Control Coverage (VCC): 0/20 = 0.0%**  ← the north star
+**Verified Control Coverage (VCC): 6/20 = 30.0%**  ← the north star
 
-- Capabilities: 0 🟢 integrated · 2 🟡 digested · 30 ⚪ candidate
+- Capabilities: 7 🟢 integrated · 3 🟡 digested · 32 ⚪ candidate
 - Knowledge cards: 3 claimed · 19 corroborated · 1 disputed · 12 verified
-- 17 control(s) are **mapped** to a capability but have no run receipt. Mapped is not measured — they count as zero.
+- 11 control(s) are **mapped** to a capability but have no run receipt. Mapped is not measured — they count as zero.
 <!-- END GENERATED: northstar -->
 
-> **Zero VCC is the honest answer at M0.** The north star only counts a capability whose gate has
-> actually run *here* and left a receipt. Naming a tool moves it by nothing — which is the point.
-> The number is the work queue, not the scoreboard.
+> **VCC left zero on 2026-11-26, and only by what ran.** The first sweep ran secret, code,
+> dependency and skill scanners over Paul's own repos and skills and left a signed receipt for
+> each run (`runs/`). Naming a tool still moves the number by nothing; the controls still at zero
+> are the work queue, not the scoreboard.
 
 ---
 
@@ -75,6 +76,24 @@ flowchart LR
 `scripts/verify_registry.py` **refuses** a promotion whose on-disk evidence is missing. An
 awesome-list can claim 200 tools; this repo can only claim what left a receipt.
 
+### What a receipt is
+
+Think of a receipt from a shop till: the till prints what it measured, not what the cashier says
+it measured, and the roll inside keeps every slip in order, so you cannot quietly pull one out.
+A run receipt works the same way:
+
+| the till idea | the handle |
+|---|---|
+| the till prints, the cashier doesn't type | `python3 scripts/receipt.py run --capability <id> --target <owner/repo@sha> --tool-version <v> [--report <file>] -- <command>` runs the tool itself and records the exit code the OS returned |
+| the slip says what was bought | `counts` are parsed from the tool's own report (`PARSERS` in `scripts/receipt.py`); anything a person adds goes in `operator_notes`, kept apart |
+| the receipt is in the till roll | `runs/<id>/<receipt>.json` plus one line in `runs/ledger.jsonl`, hash-chained with the core's `compute_hash` |
+| the roll is stamped | each chain head is Ed25519-signed (the core's `Ed25519Signer`); the private key lives at `~/.secure-anything/receipts-ed25519.pem`, never in the repo; the public key is `runs/receipts.pub` |
+| anyone can audit the roll | `make receipts` (in `make check`, offline) fails on an edited receipt, a dropped line, a file outside the ledger, or a signature from another key |
+| a run elsewhere | `receipt.py record --ran-on … --evidence-url …` for a CI job; marked `observed: remote` |
+
+Raw tool reports stay out of the repo (they quote private source); a receipt pins each one by
+sha256. Receipts are append-only: a mistaken run stays on the roll with a later one that corrects it.
+
 ---
 
 ## Capabilities
@@ -91,10 +110,17 @@ awesome-list can claim 200 tools; this repo can only claim what left a receipt.
 
 | | id | what it does | license | covers |
 |---|---|---|---|---|
+| 🟢 | [`claude-code-security-review`](https://github.com/anthropics/claude-code-security-review) | GitHub Action that uses Claude to security-review a diff — the AI-reviewer counterpart to AgentGate's deterministic checks | MIT | LLM02, LLM05 |
+| 🟢 | [`gitleaks`](https://github.com/gitleaks/gitleaks) | Regex/entropy secret scanner over git history with redaction, fingerprints and a .gitleaksignore for triaged false positives — the offline second opinion to TruffleHog | MIT | LLM02 |
+| 🟢 | [`osv-scanner`](https://github.com/google/osv-scanner) | Google's front end to the OSV.dev database: matches lockfile dependencies to known vulnerabilities, with an offline mode and guided remediation | Apache-2.0 | LLM03, ASI04 |
+| 🟢 | [`semgrep`](https://github.com/semgrep/semgrep) | Lightweight, offline, pattern-based static analysis across many languages — the deterministic scanner that CAN run inside an offline gate | LGPL-2.1 | LLM02, LLM05, ASI05 |
+| 🟢 | [`skillspector`](https://github.com/NVIDIA/SkillSpector) | NVIDIA's scanner for agent skills (Claude Code, Codex, MCP): static patterns + YARA for prompt injection, exfiltration, dangerous code and supply-chain risk, with an optional LLM pass | Apache-2.0 | LLM01, LLM03, ASI04 |
+| 🟢 | [`trivy`](https://github.com/aquasecurity/trivy) | Scans filesystems, lockfiles, images, IaC and Kubernetes for known-vulnerable dependencies (CVEs), misconfigurations, secrets and licences; emits SBOMs | Apache-2.0 | LLM03, ASI04 |
+| 🟢 | [`trufflehog`](https://github.com/trufflesecurity/trufflehog) | Finds leaked credentials in git history (and chats, buckets, CI logs) and VERIFIES each against its provider, so a hit says live / dead / unknown instead of 'looks like a key' | AGPL-3.0 | LLM02 |
 | 🟡 | [`codex-security`](https://github.com/openai/codex-security) | CLI + TypeScript SDK that finds, validates (sandbox-executes to kill false positives), and fixes security vulnerabilities in a repo | Apache-2.0 | LLM02, LLM03, LLM05, ASI05 |
-| ⚪ | [`claude-code-security-review`](https://github.com/anthropics/claude-code-security-review) | GitHub Action that uses Claude to security-review a diff — the AI-reviewer counterpart to AgentGate's deterministic checks | MIT | LLM02, LLM05 |
+| 🟡 | [`nuclei`](https://github.com/projectdiscovery/nuclei) | Template-driven scanner for live targets (HTTP, DNS, TLS…): exposures, misconfigurations, takeovers, CVEs — community templates in YAML | MIT | LLM02 |
+| ⚪ | [`cloudflare-security-audit-skill`](https://github.com/cloudflare/security-audit-skill) | A coding-agent skill for multi-phase security audits (recon → hunting → validation) whose findings are machine-readable and independently validated by bundled JS checkers | MIT | LLM02, LLM05, ASI05 |
 | ⚪ | [`codeql`](https://github.com/github/codeql) | Dataflow/taint analysis as queries over a code database; the queries powering GitHub code scanning | MIT | LLM05, ASI05 |
-| ⚪ | [`semgrep`](https://github.com/semgrep/semgrep) | Lightweight, offline, pattern-based static analysis across many languages — the deterministic scanner that CAN run inside an offline gate | LGPL-2.1 | LLM02, LLM05, ASI05 |
 
 **Guardrails (runtime)**
 
@@ -117,6 +143,7 @@ awesome-list can claim 200 tools; this repo can only claim what left a receipt.
 | ⚪ | [`promptfoo`](https://github.com/promptfoo/promptfoo) | Test prompts, agents and RAG; red-teaming and vulnerability scanning with a CI-gateable assertion model | MIT | LLM01, LLM05, LLM09, ASI01, ASI02 |
 | ⚪ | [`promptmap`](https://github.com/utkusen/promptmap) | Security scanner for custom LLM applications — rule-driven prompt-injection test suite | GPL-3.0 | LLM01, LLM07 |
 | ⚪ | [`pyrit`](https://github.com/microsoft/PyRIT) | Microsoft's Python Risk Identification Tool for generative AI — automated, orchestrated red-teaming | MIT | LLM01, LLM09, ASI01 |
+| ⚪ | [`strix`](https://github.com/usestrix/strix) | Autonomous AI pentesting agents that run your app in a sandbox, attack it like a human tester and validate each finding with a proof of concept | Apache-2.0 | LLM05, ASI05 |
 
 **Benchmarks**
 
@@ -161,6 +188,18 @@ awesome-list can claim 200 tools; this repo can only claim what left a receipt.
 | | id | what it does | license | covers |
 |---|---|---|---|---|
 | ⚪ | [`mcp-spec`](https://github.com/modelcontextprotocol/modelcontextprotocol) | Model Context Protocol specification — the tool/agent boundary that ASI02 (tool misuse) and ASI07 (inter-agent comms) are about | NOASSERTION ⚠️ pointer-only | ASI02, ASI04, ASI07 |
+
+**Secrets management**
+
+| | id | what it does | license | covers |
+|---|---|---|---|---|
+| ⚪ | [`infisical`](https://github.com/Infisical/infisical) | Open-source secrets manager: central store, sync to CI/hosts, dynamic secrets, rotation, secret scanning, certificates and machine identities | NOASSERTION ⚠️ pointer-only | LLM02, ASI03 |
+
+**Compliance automation**
+
+| | id | what it does | license | covers |
+|---|---|---|---|---|
+| ⚪ | [`comp-ai`](https://github.com/trycompai/comp) | Open-source compliance automation (SOC 2, ISO 27001, HIPAA, GDPR): policies, evidence collection, vendor and risk tracking — a Vanta/Drata alternative | AGPL-3.0 | — |
 
 **Engines**
 
@@ -284,8 +323,13 @@ never silently passed.
 
 ## Honest edges
 
-- **VCC is 0%.** Nothing has been integrated with a run receipt yet. M2 changes that; until then the
-  ecosystem is indexed, not proven.
+- **Each proven control is proven by a narrow slice.** A secret scan over git history is the
+  credentials-in-source slice of LLM02, not runtime leakage; a dependency scan is the package slice
+  of LLM03/ASI04; SkillSpector's static pass is the skill-text slice of LLM01. The digests in
+  `docs/satellites/` name each slice. A green control means "this slice ran here", not "solved".
+- **An external scan behind a bot firewall measures the firewall.** Nuclei's sweep of the live site
+  was answered by Vercel's challenge page (the receipt counts how often), so `nuclei` stays 🟡: it
+  ran, but it did not measure the app.
 - **Half the north-star denominator is `corroborated`, not `verified`.** The OWASP Agentic Top 10
   titles come from four agreeing secondary sources because the primary is a PDF download; see the
   note in `data/controls.yml`.

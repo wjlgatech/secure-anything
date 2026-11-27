@@ -1,0 +1,28 @@
+{
+  "capability": "osv-scanner",
+  "command": "osv-scanner scan source -r --format json --output-file $OUT/osv-ContentFactory-before.json $SCAN/ContentFactory",
+  "controls": [
+    "LLM03",
+    "ASI04"
+  ],
+  "counts": {
+    "vulnerabilities": 30,
+    "vulnerable_packages": 5
+  },
+  "duration_s": 0.8,
+  "exit_code": 1,
+  "id": "20261127T040010Z-osv-scanner-contentfactory-before",
+  "observed": "local",
+  "operator_notes": {},
+  "phase": "before",
+  "ran_at": "2026-11-27T04:00:10+00:00",
+  "ran_on": "darwin-arm64",
+  "report_sha256": "6a69b83b22045d2ecd9e4b2f988a4f44d2c9797ed9ce47efad442b83b4e068cb",
+  "stderr_sha256": "1dda54841a1006363e24ca6ad6f7153b0c31ba27fab6956bab200def9c62d0d4",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "summary": "osv-scanner scan source -r (all severities, incl. dev dependencies); exit 1 = any known vulnerability",
+  "target": "wjlgatech/ContentFactory@9a9a168a314ebb61bbbd775f9da70954ff39cd26",
+  "tool_version": "2.7.1",
+  "triage": "",
+  "verdict": "fail"
+}

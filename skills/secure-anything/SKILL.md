@@ -37,7 +37,7 @@ One front door for agent security. This skill **owns no domain logic** — it ro
 | 🟡 digested | pinned SHA + digest on disk | **no** |
 | 🟢 integrated | its gate ran HERE, exit code recorded in `runs/` | **yes** |
 
-## Capabilities (32 routable)
+## Capabilities (42 routable)
 
 
 **Gate (ours)**
@@ -50,10 +50,17 @@ One front door for agent security. This skill **owns no domain logic** — it ro
 
 | | id | what it does | license | covers |
 |---|---|---|---|---|
+| 🟢 | [`claude-code-security-review`](https://github.com/anthropics/claude-code-security-review) | GitHub Action that uses Claude to security-review a diff — the AI-reviewer counterpart to AgentGate's deterministic checks | MIT | LLM02, LLM05 |
+| 🟢 | [`gitleaks`](https://github.com/gitleaks/gitleaks) | Regex/entropy secret scanner over git history with redaction, fingerprints and a .gitleaksignore for triaged false positives — the offline second opinion to TruffleHog | MIT | LLM02 |
+| 🟢 | [`osv-scanner`](https://github.com/google/osv-scanner) | Google's front end to the OSV.dev database: matches lockfile dependencies to known vulnerabilities, with an offline mode and guided remediation | Apache-2.0 | LLM03, ASI04 |
+| 🟢 | [`semgrep`](https://github.com/semgrep/semgrep) | Lightweight, offline, pattern-based static analysis across many languages — the deterministic scanner that CAN run inside an offline gate | LGPL-2.1 | LLM02, LLM05, ASI05 |
+| 🟢 | [`skillspector`](https://github.com/NVIDIA/SkillSpector) | NVIDIA's scanner for agent skills (Claude Code, Codex, MCP): static patterns + YARA for prompt injection, exfiltration, dangerous code and supply-chain risk, with an optional LLM pass | Apache-2.0 | LLM01, LLM03, ASI04 |
+| 🟢 | [`trivy`](https://github.com/aquasecurity/trivy) | Scans filesystems, lockfiles, images, IaC and Kubernetes for known-vulnerable dependencies (CVEs), misconfigurations, secrets and licences; emits SBOMs | Apache-2.0 | LLM03, ASI04 |
+| 🟢 | [`trufflehog`](https://github.com/trufflesecurity/trufflehog) | Finds leaked credentials in git history (and chats, buckets, CI logs) and VERIFIES each against its provider, so a hit says live / dead / unknown instead of 'looks like a key' | AGPL-3.0 | LLM02 |
 | 🟡 | [`codex-security`](https://github.com/openai/codex-security) | CLI + TypeScript SDK that finds, validates (sandbox-executes to kill false positives), and fixes security vulnerabilities in a repo | Apache-2.0 | LLM02, LLM03, LLM05, ASI05 |
-| ⚪ | [`claude-code-security-review`](https://github.com/anthropics/claude-code-security-review) | GitHub Action that uses Claude to security-review a diff — the AI-reviewer counterpart to AgentGate's deterministic checks | MIT | LLM02, LLM05 |
+| 🟡 | [`nuclei`](https://github.com/projectdiscovery/nuclei) | Template-driven scanner for live targets (HTTP, DNS, TLS…): exposures, misconfigurations, takeovers, CVEs — community templates in YAML | MIT | LLM02 |
+| ⚪ | [`cloudflare-security-audit-skill`](https://github.com/cloudflare/security-audit-skill) | A coding-agent skill for multi-phase security audits (recon → hunting → validation) whose findings are machine-readable and independently validated by bundled JS checkers | MIT | LLM02, LLM05, ASI05 |
 | ⚪ | [`codeql`](https://github.com/github/codeql) | Dataflow/taint analysis as queries over a code database; the queries powering GitHub code scanning | MIT | LLM05, ASI05 |
-| ⚪ | [`semgrep`](https://github.com/semgrep/semgrep) | Lightweight, offline, pattern-based static analysis across many languages — the deterministic scanner that CAN run inside an offline gate | LGPL-2.1 | LLM02, LLM05, ASI05 |
 
 **Guardrails (runtime)**
 
@@ -76,6 +83,7 @@ One front door for agent security. This skill **owns no domain logic** — it ro
 | ⚪ | [`promptfoo`](https://github.com/promptfoo/promptfoo) | Test prompts, agents and RAG; red-teaming and vulnerability scanning with a CI-gateable assertion model | MIT | LLM01, LLM05, LLM09, ASI01, ASI02 |
 | ⚪ | [`promptmap`](https://github.com/utkusen/promptmap) | Security scanner for custom LLM applications — rule-driven prompt-injection test suite | GPL-3.0 | LLM01, LLM07 |
 | ⚪ | [`pyrit`](https://github.com/microsoft/PyRIT) | Microsoft's Python Risk Identification Tool for generative AI — automated, orchestrated red-teaming | MIT | LLM01, LLM09, ASI01 |
+| ⚪ | [`strix`](https://github.com/usestrix/strix) | Autonomous AI pentesting agents that run your app in a sandbox, attack it like a human tester and validate each finding with a proof of concept | Apache-2.0 | LLM05, ASI05 |
 
 **Benchmarks**
 
@@ -120,6 +128,18 @@ One front door for agent security. This skill **owns no domain logic** — it ro
 | | id | what it does | license | covers |
 |---|---|---|---|---|
 | ⚪ | [`mcp-spec`](https://github.com/modelcontextprotocol/modelcontextprotocol) | Model Context Protocol specification — the tool/agent boundary that ASI02 (tool misuse) and ASI07 (inter-agent comms) are about | NOASSERTION ⚠️ pointer-only | ASI02, ASI04, ASI07 |
+
+**Secrets management**
+
+| | id | what it does | license | covers |
+|---|---|---|---|---|
+| ⚪ | [`infisical`](https://github.com/Infisical/infisical) | Open-source secrets manager: central store, sync to CI/hosts, dynamic secrets, rotation, secret scanning, certificates and machine identities | NOASSERTION ⚠️ pointer-only | LLM02, ASI03 |
+
+**Compliance automation**
+
+| | id | what it does | license | covers |
+|---|---|---|---|---|
+| ⚪ | [`comp-ai`](https://github.com/trycompai/comp) | Open-source compliance automation (SOC 2, ISO 27001, HIPAA, GDPR): policies, evidence collection, vendor and risk tracking — a Vanta/Drata alternative | AGPL-3.0 | — |
 
 **Engines**
 

@@ -1,0 +1,42 @@
+{
+  "capability": "nuclei",
+  "command": "nuclei -u https://futuremake.io -tags exposure,misconfig,takeover -etags intrusive,dos,fuzz,fuzzing,bruteforce,brute-force,rce,sqli -severity critical -dast=false -no-interactsh -rl 1 -c 1 -bs 1 -timeout 10 -retries 0 -ms -jsonl -o $OUT/nuclei-futuremake-critical.jsonl -silent",
+  "controls": [
+    "LLM02"
+  ],
+  "counts": {
+    "edge_challenged": 73,
+    "matched_templates": {},
+    "matches": 0,
+    "matches_by_severity": {},
+    "responses_by_status": {
+      "403": 73,
+      "none": 6
+    },
+    "results": 79
+  },
+  "duration_s": 208.0,
+  "exit_code": 0,
+  "id": "20261127T041013Z-nuclei-futuremake.io-once",
+  "observed": "local",
+  "operator_notes": {
+    "earlier_full_pass": {
+      "matched_on": "403 Vercel Security Checkpoint (x-vercel-mitigated: challenge)",
+      "matches": 10,
+      "recorded_via_receipt": false,
+      "requests": 4874,
+      "templates": 2069
+    }
+  },
+  "phase": "once",
+  "ran_at": "2026-11-27T04:10:13+00:00",
+  "ran_on": "darwin-arm64",
+  "report_sha256": "10672ea809bbef4af3496a8277e723950938d89c3dbbb26edf129bd5b95ef4a8",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "10672ea809bbef4af3496a8277e723950938d89c3dbbb26edf129bd5b95ef4a8",
+  "summary": "safe tags (exposure, misconfig, takeover), severity critical, intrusive/dos/fuzz/bruteforce excluded, no interactsh, 1 req/s, -ms so every template's response is kept. Context: a full 2,069-template pass earlier the same night (5 req/s) matched only on Vercel's 403 challenge page; this run measures how much of the scan reached the app.",
+  "target": "https://futuremake.io",
+  "tool_version": "3.11.1 (templates v10.5.2)",
+  "triage": "",
+  "verdict": "pass"
+}

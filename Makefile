@@ -1,5 +1,5 @@
 .PHONY: install test lint fmt check build build-check northstar route \
-        manifest registry ainative publish-gate public public-drift run worker docker-up
+        manifest registry receipts ainative publish-gate public public-drift run worker docker-up
 
 install:
 	python -m pip install -e ".[dev]"
@@ -7,7 +7,7 @@ install:
 # THE canonical gate (what CI and `anyagent goal` discover).
 # Offline and deterministic: no network, no API key. Order is deliberate — cheap
 # structural gates fail fast before the test suite runs.
-check: lint manifest registry build-check publish-gate public-drift ainative test
+check: lint manifest registry receipts build-check publish-gate public-drift ainative test
 
 lint:
 	ruff check src tests scripts
@@ -24,6 +24,9 @@ manifest:            ## charter docs exist, with their required headings
 
 registry:            ## refuse any status promotion lacking on-disk evidence
 	python3 scripts/verify_registry.py
+
+receipts:            ## every run receipt is in the signed, hash-chained ledger (offline)
+	python3 scripts/receipt.py verify
 
 build:               ## regenerate every published surface from data/
 	python3 scripts/build.py

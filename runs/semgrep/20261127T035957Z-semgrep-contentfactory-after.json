@@ -1,0 +1,32 @@
+{
+  "capability": "semgrep",
+  "command": "semgrep scan --metrics=off --config p/default --config p/javascript --config p/typescript --config p/secrets --config p/nextjs --exclude node_modules --json -o $OUT/sg-cf-all.json --error .",
+  "controls": [
+    "LLM02",
+    "LLM05",
+    "ASI05"
+  ],
+  "counts": {
+    "by_severity": {
+      "WARNING": 189
+    },
+    "errors": 2,
+    "results": 189
+  },
+  "duration_s": 16.7,
+  "exit_code": 1,
+  "id": "20261127T035957Z-semgrep-contentfactory-after",
+  "observed": "local",
+  "operator_notes": {},
+  "phase": "after",
+  "ran_at": "2026-11-27T03:59:57+00:00",
+  "ran_on": "darwin-arm64",
+  "report_sha256": "871d8e12db727260046d87589cdc4e0dec65eec61ceee9410e88b21f8f460d3a",
+  "stderr_sha256": "269017ba838c11b5d82d44c74801f7a07b357caccfb226e666976d2886d37fac",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "summary": "all severities; no ERROR (162 of the WARNINGs are in never-deployed reference-code/)",
+  "target": "wjlgatech/ContentFactory@74e77fa72c2532b38316f915ece7b1fddff0a291",
+  "tool_version": "1.187.0",
+  "triage": "",
+  "verdict": "fail"
+}

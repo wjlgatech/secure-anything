@@ -1,0 +1,29 @@
+{
+  "capability": "gitleaks",
+  "command": "gitleaks git $SCAN/ContentFactory.git --log-opts=--all --redact --no-banner --report-format json --report-path $OUT/gl-cf-before.json",
+  "controls": [
+    "LLM02"
+  ],
+  "counts": {
+    "by_rule": {
+      "generic-api-key": 1
+    },
+    "findings": 1
+  },
+  "duration_s": 0.5,
+  "exit_code": 1,
+  "id": "20261127T035437Z-gitleaks-contentfactory-before",
+  "observed": "local",
+  "operator_notes": {},
+  "phase": "before",
+  "ran_at": "2026-11-27T03:54:37+00:00",
+  "ran_on": "darwin-arm64",
+  "report_sha256": "1ac57be49b0c96e80c65a0c3be0ff706eec0a636c9586c5a677a6534beec0ca8",
+  "stderr_sha256": "65768460582efbc4876fddb8b453e412e6f9a4ea426355b0980410b5ecdc8990",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "summary": "all refs, before triage",
+  "target": "wjlgatech/ContentFactory@74e77fa72c2532b38316f915ece7b1fddff0a291",
+  "tool_version": "8.30.1",
+  "triage": "",
+  "verdict": "fail"
+}

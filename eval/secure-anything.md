@@ -27,6 +27,14 @@ Expectation syntax:
 | `gate an mcp server` | capability?mcp-spec | the tool boundary ASI02/ASI07 describe |
 | `threat model my agent` | capability?agent-wiz | map the agent before gating it |
 | `npx skills` | capability?skills-registry | the skill supply chain is infrastructure to gate, not a defence |
+| `find leaked secrets in git history` | capability?trufflehog | verified secret scanning over every ref |
+| `scan for vulnerable dependencies` | capability?trivy | lockfile CVE scan; osv-scanner is the cross-check |
+| `scan my live site for exposed files` | capability?nuclei | safe-tag live scan of a system you own |
+| `is this skill safe to install` | capability?skillspector | the skill supply chain finally has a scanner |
+| `ai pentest my web app` | capability?strix | autonomous pentest agents (needs a key + Docker) |
+| `run a multi-phase security audit` | capability?cloudflare-security-audit-skill | the audit is an agent session, not a binary |
+| `soc 2 compliance` | capability?comp-ai | compliance frameworks, outside the OWASP denominator |
+| `we need a secrets manager` | warn:infisical | NOASSERTION licence ⇒ pointer only |
 
 ## Should route — knowledge
 
