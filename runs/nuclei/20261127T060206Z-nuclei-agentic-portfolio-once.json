@@ -1,0 +1,44 @@
+{
+  "capability": "nuclei",
+  "command": "nuclei -u http://localhost:3417 -tags exposure,misconfig,default-login,tech -etags intrusive,dos,fuzz,fuzzing,bruteforce,brute-force,rce,sqli -dast=false -no-interactsh -rl 30 -c 10 -timeout 10 -retries 0 -ms -jsonl -o $OUT/nuclei-local.jsonl -silent",
+  "controls": [
+    "LLM02"
+  ],
+  "counts": {
+    "edge_challenged": 0,
+    "matched_templates": {
+      "http-missing-security-headers": 6,
+      "tech-detect": 1,
+      "weak-csp-detect": 1
+    },
+    "matches": 8,
+    "matches_by_severity": {
+      "info": 8
+    },
+    "responses_by_status": {
+      "200": 1247,
+      "308": 220,
+      "400": 4,
+      "404": 2041,
+      "431": 1,
+      "none": 63
+    },
+    "results": 3576
+  },
+  "duration_s": 240.5,
+  "exit_code": 0,
+  "id": "20261127T060206Z-nuclei-agentic-portfolio-once",
+  "observed": "local",
+  "operator_notes": {},
+  "phase": "once",
+  "ran_at": "2026-11-27T06:02:06+00:00",
+  "ran_on": "darwin-arm64",
+  "report_sha256": "36b90200f00b657ab26ccb8dd1b7096b23041fa076e2930115e88b3814ac8e38",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "36b90200f00b657ab26ccb8dd1b7096b23041fa076e2930115e88b3814ac8e38",
+  "summary": "Local production build (next build && next start on http://localhost:3417, owner gate ON) of the CopilotKit 1.90.2 upgrade commit, before merge. Safe tags only (exposure, misconfig, default-login, tech); intrusive/dos/fuzz/bruteforce/rce/sqli excluded, -dast=false, no interactsh, 30 req/s, -ms so every template's response is kept. No Vercel edge in front: this measures the app itself.",
+  "target": "wjlgatech/agentic-portfolio@df7f39919de000631df838431f8ceeb992731c8b",
+  "tool_version": "3.11.1 (templates v10.5.2)",
+  "triage": "",
+  "verdict": "pass"
+}
